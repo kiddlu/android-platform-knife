@@ -2,13 +2,18 @@
 
 CC = $(CROSS_COMPILE)gcc
 LD = $(CROSS_COMPILE)ld
-EXEC = mkbootimg
+
+TARGET=mkbootimg
+
+TARGET_EXE=$(TARGET)
 OBJ = mkbootimg.o
 STATIC_LIB = ../libmincrypt/libmincrypt.a
+CFLAGS = -Werror
 CFLAGS += -I../include
 
-$(EXEC):$(OBJ);$(CC) -o $@ $< $(STATIC_LIB)
-%.o:%.c;$(CC) $(CFLAGS) -c -o $@ $<
+$(TARGET_EXE):$(OBJ) $(STATIC_LIB);$(CC) -o $@ $^
+$(filter %.o,$(OBJ)):%.o:%.c;$(CC) $(CFLAGS) -c -o $@ $<
 
+.PHONY:clean
 clean:
-	 rm -f $(OBJ) $(EXEC)
+	 rm -f $(OBJ) $(TARGET_EXE)

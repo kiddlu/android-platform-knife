@@ -2,12 +2,17 @@
 
 CC = $(CROSS_COMPILE)gcc
 LD = $(CROSS_COMPILE)ld
-EXEC = mkbootfs
-OBJ = mkbootfs.o
-SRC = mkbootfs.c
-CFLAGS += -I../include
-$(EXEC):$(OBJ);$(CC) -o $@ $<
-$(OBJ):$(SRC);$(CC) $(CFLAGS) -c -o $@ $<
 
+TARGET=mkbootfs
+
+TARGET_EXE=$(TARGET)
+OBJ = mkbootfs.o
+CFLAGS = -Werror
+CFLAGS += -I../include
+
+$(TARGET_EXE):$(OBJ);$(CC) -o $@ $<
+$(filter %.o,$(OBJ)):%.o:%.c;$(CC) $(CFLAGS) -c -o $@ $<
+
+.PHONY:clean
 clean:
-	 rm -f $(OBJ) $(EXEC)
+	 rm -f $(OBJ) $(TARGET_EXE)
