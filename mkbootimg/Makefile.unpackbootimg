@@ -3,7 +3,7 @@
 CC = $(CROSS_COMPILE)gcc
 LD = $(CROSS_COMPILE)ld
 
-TARGET=unpauckbootimg
+TARGET=unpackbootimg
 
 TARGET_EXE=$(TARGET)
 OBJ = unpackbootimg.o
