@@ -136,7 +136,20 @@ int main(int argc, char** argv)
     fwrite(ramdisk, header.ramdisk_size, 1, r);
     fclose(r);
     
-    fclose(f);
+    //printf("total read: %d\n", header.ramdisk_size);
+    total_read += read_padding(f, header.ramdisk_size, pagesize);
+
+    sprintf(tmp, "%s/%s", directory, basename(filename));
+    strcat(tmp, "-dtb.img");
+    FILE *d = fopen(tmp, "wb");
+    byte* dt = (byte*)malloc(header.dt_size);
+    //printf("Reading device tree...\n");
+    fread(dt, header.dt_size, 1, f);
+    total_read += header.dt_size;
+    fwrite(dt, header.dt_size, 1, d);
+    fclose(d);
+
+	fclose(f);
     
     //printf("Total Read: %d\n", total_read);
     return 0;
