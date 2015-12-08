@@ -1,1 +1,1 @@
-Android Host Binary On (mingw/cygwin) Windows
+Android Host Binary On Posix ( Linux / Darwin / Cygwin )
