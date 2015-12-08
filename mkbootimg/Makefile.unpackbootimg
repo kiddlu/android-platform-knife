@@ -7,11 +7,10 @@ TARGET=unpackbootimg
 
 TARGET_EXE=$(TARGET)
 OBJ = unpackbootimg.o
-STATIC_LIB = ../libmincrypt/libmincrypt.a
 CFLAGS = -Werror
 CFLAGS += -I../include
 
-$(TARGET_EXE):$(OBJ) $(STATIC_LIB);$(CC) -o $@ $^
+$(TARGET_EXE):$(OBJ);$(CC) -o $@ $^
 $(filter %.o,$(OBJ)):%.o:%.c;$(CC) $(CFLAGS) -c -o $@ $<
 
 .PHONY:clean
