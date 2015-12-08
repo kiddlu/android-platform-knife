@@ -82,6 +82,10 @@ int main(int argc, char** argv)
             filename = val;
         } else if(!strcmp(arg, "--output") || !strcmp(arg, "-o")) {
             directory = val;
+            if(access(directory, F_OK) != 0) {
+                printf("Create Dir %s\n", directory);
+                mkdir(directory, S_IRWXU | S_IRWXG | S_IRWXO);
+            }
         } else if(!strcmp(arg, "--pagesize") || !strcmp(arg, "-p")) {
             pagesize = strtoul(val, 0, 16);
         } else {
