@@ -9,6 +9,14 @@
 
 #include "bootimg.h"
 
+
+#define CMDLINE_SUFFIX    "-cmdline"
+#define BASE_SUFFIX       "-base"
+#define PAGESIZE_SUFFIX   "-pagesize"
+#define KERNEL_SUFFIX     "-zImage"
+#define RAMDISK_SUFFIX    "-ramdisk.gz"
+#define DT_SUFFIX         "-dt.img"
+
 typedef unsigned char byte;
 
 FILE *bootimg;
@@ -111,19 +119,19 @@ int main(int argc, char** argv)
     
     //printf("cmdline...\n");
     sprintf(tmp, "%s/%s", directory, basename(filename));
-    strcat(tmp, "-cmdline");
+    strcat(tmp, CMDLINE_SUFFIX);
     write_string_to_file(tmp, hdr.cmdline);
     
     //printf("base...\n");
     sprintf(tmp, "%s/%s", directory, basename(filename));
-    strcat(tmp, "-base");
+    strcat(tmp, BASE_SUFFIX);
     char basetmp[200];
     sprintf(basetmp, "%08x", hdr.kernel_addr - 0x00008000);
     write_string_to_file(tmp, basetmp);
 
     //printf("pagesize...\n");
     sprintf(tmp, "%s/%s", directory, basename(filename));
-    strcat(tmp, "-pagesize");
+    strcat(tmp, PAGESIZE_SUFFIX);
     char pagesizetmp[200];
     sprintf(pagesizetmp, "%d", hdr.page_size);
     write_string_to_file(tmp, pagesizetmp);
@@ -133,7 +141,7 @@ int main(int argc, char** argv)
     total_read += read_padding(bootimg, sizeof(hdr), pagesize);
 
     sprintf(tmp, "%s/%s", directory, basename(filename));
-    strcat(tmp, "-zImage");
+    strcat(tmp, KERNEL_SUFFIX);
     FILE *kernel = fopen(tmp, "wb");
     dump_to_file(kernel, hdr.kernel_size, bootimg);
     fclose(kernel);
@@ -141,17 +149,17 @@ int main(int argc, char** argv)
     total_read += read_padding(bootimg, hdr.kernel_size, pagesize);
 
     sprintf(tmp, "%s/%s", directory, basename(filename));
-    strcat(tmp, "-ramdisk.gz");
+    strcat(tmp, RAMDISK_SUFFIX);
     FILE *ramdisk = fopen(tmp, "wb");
     dump_to_file(ramdisk, hdr.ramdisk_size, bootimg);
     fclose(ramdisk);
     total_read += read_padding(bootimg, hdr.ramdisk_size, pagesize);
 
     sprintf(tmp, "%s/%s", directory, basename(filename));
-    strcat(tmp, "-dtb.img");
-    FILE *dtb = fopen(tmp, "wb");
-    dump_to_file(dtb, hdr.dt_size, bootimg);
-    fclose(dtb);
+    strcat(tmp, DT_SUFFIX);
+    FILE *dt = fopen(tmp, "wb");
+    dump_to_file(dt, hdr.dt_size, bootimg);
+    fclose(dt);
     total_read += read_padding(bootimg, hdr.dt_size, pagesize);
 
     fclose(bootimg);
