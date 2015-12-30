@@ -1,0 +1,19 @@
+#makefile for mkbootfs on Windows
+
+CC = $(CROSS_COMPILE)gcc
+LD = $(CROSS_COMPILE)ld
+
+TARGET=simg2img
+
+TARGET_EXE=$(TARGET)
+OBJ = simg2img.o sparse_crc32.o
+STATIC_LIB = ./libsparse.a ../zlib/src/libz.a
+CFLAGS = -Werror
+CFLAGS += -I../include -I./include
+
+$(TARGET_EXE):$(OBJ) $(STATIC_LIB);$(CC) -o $@ $^
+$(filter %.o,$(OBJ)):%.o:%.c;$(CC) $(CFLAGS) -c -o $@ $<
+
+.PHONY:clean
+clean:
+	 rm -f $(OBJ) $(TARGET_EXE)

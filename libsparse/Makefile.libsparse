@@ -1,0 +1,21 @@
+#makefile for libmincrypt on Windows
+
+CC = $(CROSS_COMPILE)gcc
+LD = $(CROSS_COMPILE)ld
+AR = $(CROSS_COMPILE)ar
+
+TARGET=libsparse
+OBJ = backed_block.o output_file.o sparse.o sparse_crc32.o sparse_err.o sparse_read.o
+STATIC_LIB = ../zlib/src/libz.a
+CFLAGS = -Wall -Werror
+TARGET_STATIC_LIB = $(TARGET).a
+CFLAGS += -I../include -I../zlib/src -I./include -Wall -Werror
+
+$(TARGET_STATIC_LIB):$(OBJ) $(STATIC_LIB);$(AR) -r $(TARGET_STATIC_LIB) $(OBJ)
+$(filter %.o,$(OBJ)):%.o:%.c;$(CC) $(CFLAGS) -c -o $@ $<
+
+.PHONY:clean
+clean:
+	 rm -f $(OBJ) $(TARGET_STATIC_LIB)
+
+
