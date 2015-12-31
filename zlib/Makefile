@@ -17,5 +17,3 @@ install:
 .PHONY:clean
 clean:
 	 rm -f $(OBJ) $(TARGET_STATIC_LIB)
-
-
