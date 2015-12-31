@@ -1,16 +1,12 @@
 CC = $(CROSS_COMPILE)gcc
-LD = $(CROSS_COMPILE)ld
-AR = $(CROSS_COMPILE)ar
-
 TARGET=mkbootfs
 
 TARGET_EXE=$(TARGET)
-OBJ = mkbootfs.o
-CFLAGS = -Werror
+OBJ = mkbootfs.o utils_windows.o
 CFLAGS += -I../include
 
-$(TARGET_EXE):$(OBJ);$(CC) -o $@ $<
-$(filter %.o,$(OBJ)):%.o:%.c;$(CC) $(CFLAGS) -c -o $@ $<
+$(TARGET_EXE):$(OBJ);$(CC) -o $@ $^
+$(filter %.o,$(OBJ)):%.o:%.c;$(CC) $(CFLAGS) -c -o $@ $^
 
 .PHONY:install
 install:

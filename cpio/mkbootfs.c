@@ -12,6 +12,10 @@
 #include <stdarg.h>
 #include <fcntl.h>
 
+#ifdef __WIN32__
+#include "utils_windows.h"
+#endif
+
 #include <private/android_filesystem_config.h>
 
 /* NOTES
