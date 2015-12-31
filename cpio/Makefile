@@ -1,7 +1,6 @@
-#makefile for mkbootfs on Windows
-
 CC = $(CROSS_COMPILE)gcc
 LD = $(CROSS_COMPILE)ld
+AR = $(CROSS_COMPILE)ar
 
 TARGET=mkbootfs
 
@@ -12,6 +11,10 @@ CFLAGS += -I../include
 
 $(TARGET_EXE):$(OBJ);$(CC) -o $@ $<
 $(filter %.o,$(OBJ)):%.o:%.c;$(CC) $(CFLAGS) -c -o $@ $<
+
+.PHONY:install
+install:
+	 mv $(TARGET_EXE) ../output/bin/
 
 .PHONY:clean
 clean:

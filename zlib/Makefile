@@ -1,13 +1,14 @@
 CC = $(CROSS_COMPILE)gcc
 AR = $(CROSS_COMPILE)ar
 
-TARGET=libmincrypt
-OBJ = dsa_sig.o p256.o p256_ec.o p256_ecdsa.o rsa.o sha.o sha256.o
+TARGET=libz
+OBJ = adler32.o compress.o crc32.o deflate.o gzclose.o gzlib.o gzread.o gzwrite.o infback.o inflate.o inftrees.o inffast.o trees.o uncompr.o zutil.o
 CFLAGS = -Wall -Werror
 TARGET_STATIC_LIB = $(TARGET).a
-CFLAGS += -I../include
+CFLAGS += -I../include -O3 -DUSE_MMAP
+
 $(TARGET_STATIC_LIB):$(OBJ);$(AR) -r $(TARGET_STATIC_LIB) $(OBJ)
-$(filter %.o,$(OBJ)):%.o:%.c;$(CC) $(CFLAGS) -c -o $@ $<
+$(filter %.o,$(OBJ)):%.o:src/%.c;$(CC) $(CFLAGS) -c -o $@ $<
 
 .PHONY:install
 install:
