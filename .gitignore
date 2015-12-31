@@ -1,2 +1,3 @@
-/output/bin/*
-/output/lib/*
+*.exe
+*.a
+*.o

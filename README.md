@@ -1,1 +1,1 @@
-Android Host Binary Standalone On Posix ( Linux / Darwin / Cygwin )
+Android Host Binary Standalone( Linux / Darwin / Cygwin / Windows )
