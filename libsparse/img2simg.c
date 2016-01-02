@@ -38,6 +38,11 @@
 #define off64_t off_t
 #endif
 
+#if defined(__CYGWIN__)
+#define lseek64 lseek
+#define off64_t off_t
+#endif
+
 void usage()
 {
     fprintf(stderr, "Usage: img2simg <raw_image_file> <sparse_image_file> [<block_size>]\n");

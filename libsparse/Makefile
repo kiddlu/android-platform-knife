@@ -1,20 +1,20 @@
-CC = $(CROSS_COMPILE)gcc
-
-TARGET=simg2img
-
-TARGET_EXE=$(TARGET)
-OBJ = simg2img.o sparse_crc32.o backed_block.o output_file.o sparse.o sparse_err.o sparse_read.o
-DEPEND_STATIC_LIB = ../output/lib/libz.a
-CFLAGS = -Wall
-CFLAGS += -I../include -I./include -I../zlib/src
-
-$(TARGET_EXE):$(OBJ) $(DEPEND_STATIC_LIB);$(CC) -o $@ $^
-$(filter %.o,$(OBJ)):%.o:%.c;$(CC) $(CFLAGS) -c -o $@ $<
+.PHONY:all
+all:
+	make -f Makefile.libsparse
+	make -f Makefile.simg2img
+	make -f Makefile.img2simg
+	make -f Makefile.append2simg
 
 .PHONY:install
 install:
-	 mv $(TARGET_EXE) ../output/bin/
-
+	make -f Makefile.libsparse install
+	make -f Makefile.simg2img install
+	make -f Makefile.img2simg install
+	make -f Makefile.append2simg install
+	
 .PHONY:clean
 clean:
-	 rm -f $(OBJ) $(TARGET_EXE)
+	make -f Makefile.libsparse clean
+	make -f Makefile.simg2img clean
+	make -f Makefile.img2simg clean
+	make -f Makefile.append2simg clean
