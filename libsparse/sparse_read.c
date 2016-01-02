@@ -83,7 +83,7 @@ static void verbose_error(bool verbose, int err, const char *fmt, ...)
 		s = " at ";
 	}
 	if (verbose) {
-#ifndef __WIN32__
+#ifndef _WIN32
 		if (err == -EOVERFLOW) {
 			sparse_print_verbose("EOF while reading file%s%s\n", s, at);
 		} else

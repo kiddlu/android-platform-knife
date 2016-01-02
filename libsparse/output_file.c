@@ -34,7 +34,7 @@
 #include "sparse_crc32.h"
 #include "sparse_format.h"
 
-#ifndef __WIN32__
+#ifndef _WIN32
 #include <sys/mman.h>
 #undef O_BINARY
 #define O_BINARY 0
@@ -714,7 +714,7 @@ int write_fd_chunk(struct output_file *out, unsigned int len,
 	aligned_diff = offset - aligned_offset;
 	buffer_size = len + aligned_diff;
 
-#ifndef __WIN32__
+#ifndef _WIN32
 	char *data = mmap64(NULL, buffer_size, PROT_READ, MAP_SHARED, fd,
 			aligned_offset);
 	if (data == MAP_FAILED) {
@@ -742,7 +742,7 @@ int write_fd_chunk(struct output_file *out, unsigned int len,
 
 	ret = out->sparse_ops->write_data_chunk(out, len, ptr);
 
-#ifndef __WIN32__
+#ifndef _WIN32
 	munmap(data, buffer_size);
 #else
 	free(data);
