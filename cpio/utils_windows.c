@@ -20,7 +20,7 @@
  * 
  * 
  */
-#ifdef __WIN32__
+#ifdef _WIN32
 
 #include <string.h>
 
