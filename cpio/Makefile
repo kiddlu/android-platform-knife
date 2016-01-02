@@ -10,8 +10,9 @@ $(filter %.o,$(OBJ)):%.o:%.c;$(CC) $(CFLAGS) -c -o $@ $^
 
 .PHONY:install
 install:
-	 mv $(TARGET_EXE) ../output/bin/
+	mv $(TARGET_EXE) ../output/bin/
+	cp ./unpackramdisk.sh ../output/bin/
 
 .PHONY:clean
 clean:
-	 rm -f $(OBJ) $(TARGET_EXE)
+	rm -f $(OBJ) $(TARGET_EXE)
