@@ -51,10 +51,10 @@
 #endif
 
 #if defined(__CYGWIN__)
-#define off64_t off_t
-#define lseek64 lseek
+#define lseek64	lseek
 #define ftruncate64 ftruncate
 #define mmap64 mmap
+#define off64_t _off64_t 
 #endif
 
 #define min(a, b) \
