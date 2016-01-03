@@ -16,12 +16,35 @@
 #define KERNEL_SUFFIX     "-zImage"
 #define RAMDISK_SUFFIX    "-ramdisk.gz"
 #define DT_SUFFIX         "-dt.img"
+#define REPACK_SCRIPT     "repack.sh"
 
 typedef unsigned char byte;
 
 FILE *bootimg;
 boot_img_hdr hdr;
 int total_read = 0;
+
+int creat_repack_sricpt(FILE* f)
+{
+    char script[PATH_MAX];
+    sprintf(script,
+"#!/bin/sh\n\
+\n\
+mkbootimg \
+--kernel ./boot.img-zImage \
+--ramdisk ./ramdisk.img \
+--dt ./boot.img-dt.img \
+--cmdline '%s' \
+--base 0x%0x8 \
+--pagesize %d \
+-o ./boot.img\n",
+    hdr.cmdline, hdr.kernel_addr - 0x00008000, hdr.page_size);
+
+    fwrite(script, strlen(script), 1, f);
+
+    return 0;
+}
+
 
 int read_padding(FILE* f, unsigned int itemsize, int pagesize)
 {
@@ -130,7 +153,7 @@ int main(int argc, char** argv)
     sprintf(tmp, "%s/%s", directory, basename(filename));
     strcat(tmp, BASE_SUFFIX);
     char basetmp[200];
-    sprintf(basetmp, "%08x", hdr.kernel_addr - 0x00008000);
+    sprintf(basetmp, "0x%08x", hdr.kernel_addr - 0x00008000);
     write_string_to_file(tmp, basetmp);
 
     //printf("pagesize...\n");
@@ -165,6 +188,11 @@ int main(int argc, char** argv)
     dump_to_file(dt, hdr.dt_size, bootimg);
     fclose(dt);
     total_read += read_padding(bootimg, hdr.dt_size, pagesize);
+
+    sprintf(tmp, "%s/%s", directory, REPACK_SCRIPT);
+    FILE *repack = fopen(tmp, "wx");
+    creat_repack_sricpt(repack);
+    fclose(repack);
 
     fclose(bootimg);
     
