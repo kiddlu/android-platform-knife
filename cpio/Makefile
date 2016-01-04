@@ -12,6 +12,7 @@ $(filter %.o,$(OBJ)):%.o:%.c;$(CC) $(CFLAGS) -c -o $@ $^
 install:
 	mv $(TARGET_EXE) ../output/bin/
 	cp ./unpackramdisk.sh ../output/bin/
+	cp ./packramdisk.sh ../output/bin/
 
 .PHONY:clean
 clean:
