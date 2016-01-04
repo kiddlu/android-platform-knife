@@ -1,18 +1,10 @@
 .PHONY:all
 all:
-	cd zlib/ && make
-	cd libmincrypt/ && make
-	cd libsparse/ && make
-	cd mkbootimg/ && make
-	cd cpio/ && make
-
-.PHONY:install
-install:
-	cd zlib/ && make install
-	cd libmincrypt/ && make install
-	cd libsparse/ && make install
-	cd mkbootimg/ && make install
-	cd cpio/ && make install
+	cd zlib/ && make && make install && make clean
+	cd libmincrypt/ && make && make install && make clean
+	cd libsparse/ && make && make install && make clean
+	cd mkbootimg/ && make && make install && make clean
+	cd cpio/ && make && make install && make clean
 	cd prebuild/ && make install
 
 .PHONY:clean
