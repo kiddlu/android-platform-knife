@@ -12,7 +12,7 @@ $(filter %.o,$(OBJ)):%.o:%.c;$(CC) $(CFLAGS) -c -o $@ $<
 
 .PHONY:install
 install:
-	 mv $(TARGET_EXE) ../output/bin/
+	 cp -rf $(TARGET_EXE) ../output/bin/
 
 .PHONY:clean
 clean:

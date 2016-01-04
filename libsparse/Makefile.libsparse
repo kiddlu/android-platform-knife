@@ -13,7 +13,7 @@ $(filter %.o,$(OBJ)):%.o:%.c;$(CC) $(CFLAGS) -c -o $@ $<
 
 .PHONY:install
 install:
-	 mv $(TARGET_STATIC_LIB) ../output/lib/
+	 cp -rf $(TARGET_STATIC_LIB) ../output/lib/
 
 .PHONY:clean
 clean:
