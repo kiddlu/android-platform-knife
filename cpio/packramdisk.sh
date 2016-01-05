@@ -37,11 +37,12 @@ if [ ! -d "$INPUT" ]; then
 fi
 
 if  [ ! -n "$2" ] ;then
-  OUTPUT=./ramdisk.img
+  OUTPUT=`pwd`/ramdisk.img
 else
-  OUTPUT=$2
+  OUTPUT=`readlink -f $2`
 fi
 
 echo "pack ramdisk to $OUTPUT"
 
-exec mkbootfs "$INPUT" | minigzip > $OUTPUT
+#exec mkbootfs "$INPUT" | minigzip > $OUTPUT
+cd `readlink -f $INPUT`;find . | cpio -o -H newc | gzip > $OUTPUT
