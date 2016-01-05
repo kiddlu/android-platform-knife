@@ -197,7 +197,7 @@ int main(int argc, char** argv)
     total_read += read_padding(bootimg, hdr.dt_size, pagesize);
 
     sprintf(tmp, "%s/%s", directory, REPACK_SCRIPT);
-    FILE *repack = fopen(tmp, "wx");
+    FILE *repack = fopen(tmp, "wb");
     creat_repack_sricpt(repack);
     fclose(repack);
 
