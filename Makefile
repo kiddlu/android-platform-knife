@@ -1,5 +1,10 @@
+
+UNAME = $(shell uname)
+
 .PHONY:all
 all:
+	@echo "Building for $(UNAME)"
+	@echo ""
 	cd zlib/ && make && make install && make clean
 	cd libmincrypt/ && make && make install && make clean
 	cd libsparse/ && make && make install && make clean
