@@ -1,0 +1,19 @@
+CC = $(CROSS_COMPILE)gcc
+
+TARGET=unpackbootimg
+
+TARGET_EXE=$(TARGET)
+OBJ = unpackbootimg.o
+CFLAGS = -Werror
+CFLAGS += -I../include
+
+$(TARGET_EXE):$(OBJ);$(CC) -o $@ $^
+$(filter %.o,$(OBJ)):%.o:%.c;$(CC) $(CFLAGS) -c -o $@ $<
+
+.PHONY:install
+install:
+	 cp -rf $(TARGET_EXE) ../../../output/bin/
+
+.PHONY:clean
+clean:
+	 rm -f $(OBJ) $(TARGET_EXE)

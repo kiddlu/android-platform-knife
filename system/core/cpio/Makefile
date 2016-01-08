@@ -1,0 +1,19 @@
+CC = $(CROSS_COMPILE)gcc
+TARGET=mkbootfs
+
+TARGET_EXE=$(TARGET)
+OBJ = mkbootfs.o utils_windows.o
+CFLAGS += -I../include
+
+$(TARGET_EXE):$(OBJ);$(CC) -o $@ $^
+$(filter %.o,$(OBJ)):%.o:%.c;$(CC) $(CFLAGS) -c -o $@ $^
+
+.PHONY:install
+install:
+	cp -rf $(TARGET_EXE) ../../../output/bin/
+	cp -rf ./unpackramdisk.sh ../../../output/bin/
+	cp -rf ./packramdisk.sh ../../../output/bin/
+
+.PHONY:clean
+clean:
+	rm -f $(OBJ) $(TARGET_EXE)
