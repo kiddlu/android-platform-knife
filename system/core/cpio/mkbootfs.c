@@ -12,7 +12,7 @@
 #include <stdarg.h>
 #include <fcntl.h>
 
-#ifdef __WIN32__
+#ifdef _WIN32
 #include "utils_windows.h"
 #endif
 

@@ -120,7 +120,7 @@ int main(int argc, char** argv)
             directory = val;
             if(access(directory, F_OK) != 0) {
                 printf("Create Dir %s\n", directory);
-#ifdef __WIN32__
+#ifdef _WIN32
 				_mkdir(directory);
 #else
 				mkdir(directory, S_IRWXU | S_IRWXG | S_IRWXO);
