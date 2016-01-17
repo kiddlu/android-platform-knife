@@ -1,10 +1,10 @@
 
 UNAME = $(shell uname)
-
+GCCVERSION = $(shell $(CROSS_COMPILE)gcc -v)
 .PHONY:all
 all:
 	@echo "Building for $(UNAME)"
-	@echo ""
+	@echo "$(GCCVERSION)"
 	cd external/zlib/ && make && make install && make clean
 	cd system/core/libmincrypt/ && make && make install && make clean
 	cd system/core/libsparse/ && make && make install && make clean
