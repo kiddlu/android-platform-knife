@@ -35,11 +35,13 @@
 #include "sparse_format.h"
 
 #ifndef _WIN32
+/* POSIX */
 #include <sys/mman.h>
 #undef O_BINARY
 #define O_BINARY 0
-#else
-#include "mman.h"
+#define USE_MMAP 1
+#else 
+/* MinGW */
 #define ftruncate64 ftruncate
 #endif
 
@@ -50,11 +52,12 @@
 #define off64_t off_t
 #endif
 
+/* Cygwin */
 #if defined(__CYGWIN__)
-#define lseek64	lseek
+#undef USE_MMAP /*fix bug mmap*/
+#define lseek64 lseek
 #define ftruncate64 ftruncate
-#define mmap64 mmap
-#define off64_t _off64_t 
+#define off64_t off_t
 #endif
 
 #define min(a, b) \
@@ -714,7 +717,7 @@ int write_fd_chunk(struct output_file *out, unsigned int len,
 	aligned_diff = offset - aligned_offset;
 	buffer_size = len + aligned_diff;
 
-#ifndef _WIN32
+#if defined(USE_MMAP)
 	char *data = mmap64(NULL, buffer_size, PROT_READ, MAP_SHARED, fd,
 			aligned_offset);
 	if (data == MAP_FAILED) {
@@ -742,7 +745,7 @@ int write_fd_chunk(struct output_file *out, unsigned int len,
 
 	ret = out->sparse_ops->write_data_chunk(out, len, ptr);
 
-#ifndef _WIN32
+#if defined (USE_MMAP)
 	munmap(data, buffer_size);
 #else
 	free(data);

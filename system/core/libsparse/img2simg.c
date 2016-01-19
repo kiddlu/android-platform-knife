@@ -40,7 +40,7 @@
 
 #if defined(__CYGWIN__)
 #define lseek64 lseek
-#define off64_t _off64_t 
+#define off64_t off_t 
 #endif
 
 void usage()

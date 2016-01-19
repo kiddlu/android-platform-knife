@@ -9,10 +9,9 @@
 ####Note:
 	Linux   work well
 	MacOS   not test
-	Cygwin  some bugs in simg2img,img2simg....
-	MinGW   some bugs in mkbootfs(packramdisk.sh)
+	Cygwin  work well
+	MinGW   some bugs in mkbootfs(packramdisk.sh, symbol link issue)
 
 #####TODO
-	fix bugs on Cygwin
 	fix bugs on MinGW if possible
 	
