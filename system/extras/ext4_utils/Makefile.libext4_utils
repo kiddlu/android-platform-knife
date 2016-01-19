@@ -1,0 +1,19 @@
+CC = $(CROSS_COMPILE)gcc
+AR = $(CROSS_COMPILE)ar
+
+TARGET=libext4_utils
+OBJ = make_ext4fs.o ext4fixup.o ext4_utils.o allocate.o contents.o extent.o indirect.o uuid.o sha1.o wipe.o crc16.o ext4_sb.o
+DEPEND_STATIC_LIB = ../../../output/lib/libz.a ../../../output/lib/libsparse.a
+TARGET_STATIC_LIB = $(TARGET).a
+CFLAGS += -I../../core/include -I../../../external/zlib/src -I../../core/libsparse/include
+
+$(TARGET_STATIC_LIB):$(OBJ) $(DEPEND_STATIC_LIB);$(AR) -r $(TARGET_STATIC_LIB) $(OBJ)
+$(filter %.o,$(OBJ)):%.o:%.c;$(CC) $(CFLAGS) -c -o $@ $<
+
+.PHONY:install
+install:
+	 cp -rf $(TARGET_STATIC_LIB) ../../../output/lib/
+
+.PHONY:clean
+clean:
+	 rm -f $(OBJ) $(TARGET_STATIC_LIB)

@@ -1,0 +1,19 @@
+CC = $(CROSS_COMPILE)gcc
+
+TARGET=make_ext4fs
+
+TARGET_EXE=$(TARGET)
+OBJ = make_ext4fs_main.o canned_fs_config.o
+DEPEND_STATIC_LIB = ../../../output/lib/libz.a ../../../output/lib/libsparse.a ./libext4_utils.a
+CFLAGS += -I../../core/include -I../../../external/zlib/src -I../../core/libsparse/include
+
+$(TARGET_EXE):$(OBJ) $(DEPEND_STATIC_LIB);$(CC) -o $@ $^
+$(filter %.o,$(OBJ)):%.o:%.c;$(CC) $(CFLAGS) -c -o $@ $<
+
+.PHONY:install
+install:
+	 cp -rf $(TARGET_EXE) ../../../output/bin/
+
+.PHONY:clean
+clean:
+	 rm -f $(OBJ) $(TARGET_EXE)
