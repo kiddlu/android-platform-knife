@@ -2,10 +2,14 @@ CC = $(CROSS_COMPILE)gcc
 AR = $(CROSS_COMPILE)ar
 
 TARGET=libsparse
-OBJ = backed_block.o output_file.o sparse.o sparse_crc32.o sparse_err.o sparse_read.o
-DEPEND_STATIC_LIB = ../../../output/lib/libz.a
-CFLAGS = -Wall
 TARGET_STATIC_LIB = $(TARGET).a
+
+SRC = backed_block.c output_file.c sparse.c sparse_crc32.c sparse_err.c sparse_read.c
+OBJ = $(SRC:.c=.o)
+
+DEPEND_STATIC_LIB = ../../../output/lib/libz.a
+
+CFLAGS = -Wall
 CFLAGS += -I../include -I./include -I../../../external/zlib/src
 
 $(TARGET_STATIC_LIB):$(OBJ) $(DEPEND_STATIC_LIB);$(AR) -r $(TARGET_STATIC_LIB) $(OBJ)

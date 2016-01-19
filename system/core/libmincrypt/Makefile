@@ -2,10 +2,14 @@ CC = $(CROSS_COMPILE)gcc
 AR = $(CROSS_COMPILE)ar
 
 TARGET=libmincrypt
-OBJ = dsa_sig.o p256.o p256_ec.o p256_ecdsa.o rsa.o sha.o sha256.o
-CFLAGS = -Wall -Werror
 TARGET_STATIC_LIB = $(TARGET).a
+
+SRC = dsa_sig.c p256.c p256_ec.c p256_ecdsa.c rsa.c sha.c sha256.c
+OBJ = $(SRC:.c=.o)
+
+CFLAGS = -Wall -Werror
 CFLAGS += -I../include
+
 $(TARGET_STATIC_LIB):$(OBJ);$(AR) -r $(TARGET_STATIC_LIB) $(OBJ)
 $(filter %.o,$(OBJ)):%.o:%.c;$(CC) $(CFLAGS) -c -o $@ $<
 

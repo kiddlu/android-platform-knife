@@ -1,10 +1,14 @@
 CC = $(CROSS_COMPILE)gcc
 AR = $(CROSS_COMPILE)ar
 
-TARGET=libz
-OBJ = adler32.o compress.o crc32.o deflate.o gzclose.o gzlib.o gzread.o gzwrite.o infback.o inflate.o inftrees.o inffast.o trees.o uncompr.o zutil.o
-CFLAGS = -Wall -Werror
+TARGET = libz
 TARGET_STATIC_LIB = $(TARGET).a
+
+SRC = adler32.c compress.c crc32.c deflate.c gzclose.c gzlib.c gzread.c gzwrite.c infback.c \
+		inflate.c inftrees.c inffast.c trees.c uncompr.c zutil.c
+OBJ = $(SRC:.c=.o)
+
+CFLAGS = -Wall -Werror
 CFLAGS += -I../include -O3 -DUSE_MMAP
 
 $(TARGET_STATIC_LIB):$(OBJ);$(AR) -r $(TARGET_STATIC_LIB) $(OBJ)

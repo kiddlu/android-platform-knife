@@ -1,8 +1,11 @@
 CC = $(CROSS_COMPILE)gcc
-TARGET=mkbootfs
 
+TARGET=mkbootfs
 TARGET_EXE=$(TARGET)
-OBJ = mkbootfs.o utils_windows.o
+
+SRC = mkbootfs.c utils_windows.c
+OBJ = $(SRC:.c=.o)
+
 CFLAGS += -I../include
 
 $(TARGET_EXE):$(OBJ);$(CC) -o $@ $^

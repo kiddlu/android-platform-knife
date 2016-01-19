@@ -1,9 +1,11 @@
 CC = $(CROSS_COMPILE)gcc
 
 TARGET=unpackbootimg
-
 TARGET_EXE=$(TARGET)
-OBJ = unpackbootimg.o
+
+SRC = unpackbootimg.c
+OBJ = $(SRC:.c=.o)
+
 CFLAGS = -Werror
 CFLAGS += -I../include
 

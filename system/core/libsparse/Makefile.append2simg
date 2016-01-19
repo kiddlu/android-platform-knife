@@ -1,10 +1,13 @@
 CC = $(CROSS_COMPILE)gcc
 
 TARGET=append2simg
-
 TARGET_EXE=$(TARGET)
-OBJ = append2simg.o asprintf.o
+
+SRC = append2simg.c asprintf.c
+OBJ = $(SRC:.c=.o)
+
 DEPEND_STATIC_LIB = ./libsparse.a ../../../output/lib/libz.a
+
 CFLAGS = -Wall
 CFLAGS += -I../include -I./include -I../../../external/zlib/src
 

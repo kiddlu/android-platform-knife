@@ -1,5 +1,5 @@
 
-UNAME = $(shell uname)
+UNAME = $(shell uname -o)
 GCCVERSION = $(shell $(CROSS_COMPILE)gcc -v)
 .PHONY:all
 all:
