@@ -2,7 +2,7 @@
 
 #### How to use?
 
-	cd android-tools-binary-standalone/
+	cd android-host-tools-standalone/
 	make CROSS_COMPILE=$(if-you-need)
 	source setenv.sh
 
@@ -15,3 +15,4 @@
 #####TODO
 	fix bugs on Cygwin
 	fix bugs on MinGW if possible
+	
