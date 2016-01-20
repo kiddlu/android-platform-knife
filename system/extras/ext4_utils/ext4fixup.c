@@ -36,6 +36,11 @@
 #define off64_t off_t
 #endif
 
+#if defined(__CYGWIN__)
+#define lseek64 lseek
+#define off64_t off_t
+#endif
+
 /* The inode block count for a file/directory is in units of 512 byte blocks,
  * _NOT_ the filesystem block size!
  */

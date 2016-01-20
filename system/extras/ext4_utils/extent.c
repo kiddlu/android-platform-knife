@@ -23,6 +23,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#if defined(__CYGWIN__)
+#define lseek64 lseek
+#define off64_t off_t
+#endif
 
 /* Creates data buffers for the first backing_len bytes of a block allocation
    and queues them to be written */

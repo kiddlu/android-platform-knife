@@ -42,6 +42,11 @@
 #include <sys/disk.h>
 #endif
 
+#if defined(__CYGWIN__)
+#define lseek64 lseek
+#define off64_t off_t
+#endif
+
 int force = 0;
 struct fs_info info;
 struct fs_aux_info aux_info;
