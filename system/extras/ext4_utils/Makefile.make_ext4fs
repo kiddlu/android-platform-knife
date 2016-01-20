@@ -1,13 +1,25 @@
 CC = $(CROSS_COMPILE)gcc
 
-TARGET=make_ext4fs
+FOR_WINDOWS = $(shell $(CC) -dM -E -  < /dev/null | grep _WIN32 > null && echo "yes"  || echo "no")
 
+TARGET=make_ext4fs
 TARGET_EXE=$(TARGET)
-OBJ = make_ext4fs_main.o canned_fs_config.o
-DEPEND_STATIC_LIB = ../../../output/lib/libz.a ../../../output/lib/libsparse.a ./libext4_utils.a
+
+SRC = make_ext4fs_main.c canned_fs_config.c
+OBJ = $(SRC:.c=.o)
+
+DEPEND_STATIC_LIB = ./libext4_utils.a ../../../output/lib/libsparse.a ../../../output/lib/libz.a
+
+CFLAGS = -DANDROID -DHOST 
 CFLAGS += -I../../core/include -I../../../external/zlib/src -I../../core/libsparse/include
 
-$(TARGET_EXE):$(OBJ) $(DEPEND_STATIC_LIB);$(CC) -o $@ $^
+ifeq ($(FOR_WINDOWS), yes)
+CFLAGS += -DUSE_MINGW
+LDFLAGS += -lws2_32
+else
+endif
+
+$(TARGET_EXE):$(OBJ) $(DEPEND_STATIC_LIB);$(CC) -o $@ $^ $(LDFLAGS)
 $(filter %.o,$(OBJ)):%.o:%.c;$(CC) $(CFLAGS) -c -o $@ $<
 
 .PHONY:install

@@ -10,6 +10,7 @@ all:
 	cd system/core/libsparse/ && make && make install && make clean
 	cd system/core/mkbootimg/ && make && make install && make clean
 	cd system/core/cpio/ && make && make install && make clean
+	cd system/extras/ext4_utils/ && make && make install && make clean
 	cd prebuild/ && make install
 
 .PHONY:clean
@@ -19,3 +20,4 @@ clean:
 	cd system/core/libsparse/ && make clean
 	cd system/core/mkbootimg/ && make clean
 	cd system/core/cpio/ && make clean
+	cd system/extras/ext4_utils/ && make clean
