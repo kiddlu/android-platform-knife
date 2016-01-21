@@ -1,6 +1,10 @@
 #!/bin/bash
-cp -rf ../../prebuild/arm/adbd .
-cp -rf ../../prebuild/arm/busybox .
+
+THIS_PATH=`readlink -f $0 | xargs dirname`
+echo $THIS_PATH
+
+cp -rf $THIS_PATH/../../prebuild/arm/adbd .
+cp -rf $THIS_PATH/../../prebuild/arm/busybox .
 
 ln -s busybox '['
 ln -s busybox '[['
