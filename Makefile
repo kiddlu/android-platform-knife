@@ -11,7 +11,7 @@ all:
 	cd system/core/mkbootimg/ && make && make install && make clean
 	cd system/core/cpio/ && make && make install && make clean
 	cd system/extras/ext4_utils/ && make && make install && make clean
-	cd prebuild/ && make install
+	#cd prebuild/ && make install
 
 .PHONY:clean
 clean:
