@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/xml"
+	"flag"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -28,7 +29,23 @@ type Program struct {
 
 func main() {
 
-	xml_file, err := ioutil.ReadFile("rawprogram_unsparse.xml")
+	var xml_path, output_path string
+	var image string
+	flag.StringVar(&xml_path, "x", "./rawprogram_unsparse.xml", "xml file to load")
+	flag.StringVar(&output_path, "o", "./", "output dir path")
+	flag.StringVar(&image, "t", "system", "image to unsparse: system / cache / userdata")
+	flag.Parse()
+
+	switch image {
+	case "system", "cache", "userdata":
+		fmt.Printf("target image is %s\n", image)
+	default:
+		panic("target image must be system / cache / userdata")
+	}
+	fmt.Printf("xml_path is %s\n", xml_path)
+	fmt.Printf("output_path is %s\n", output_path)
+
+	xml_file, err := ioutil.ReadFile(xml_path)
 	if err != nil {
 		panic(err)
 	}
@@ -38,33 +55,45 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
 	//fmt.Println(data.Program)
 
-	system_file, err := os.Create("system.img")
+	/*
+		target := []string{"system", "cache", "userdata"}
+		for _, image := range target {
+		}
+	*/
+
+	var img_start_sector int64
+	var length int64
+	var start_pos, last_pos, padding int64
+
+	img_file, err := os.Create(output_path + "/" + image + ".raw")
 	if err != nil {
 		panic(err)
 	}
 
-	var img_start_sector int64
 	for _, program := range data.Program {
-		if program.Label == "system" {
+		if program.Label == image {
 			id := strings.Split(strings.Split(program.Filename, "_")[1], ".")[0]
 			if id == "1" {
 				img_start_sector = program.Start_sector
 			}
-
-			length := program.Num_partition_sectors * program.SECTOR_SIZE_IN_BYTES
-			start_pos := (program.Start_sector - img_start_sector) * program.SECTOR_SIZE_IN_BYTES
-			system_file.Seek(start_pos, 0)
+			length = program.Num_partition_sectors * program.SECTOR_SIZE_IN_BYTES
+			start_pos = (program.Start_sector - img_start_sector) * program.SECTOR_SIZE_IN_BYTES
+			img_file.Seek(start_pos, os.SEEK_SET)
 
 			sparse_file, err := os.Open(program.Filename)
 			if err != nil {
 				panic(err)
 			}
-
-			io.Copy(system_file, sparse_file)
-			fmt.Printf("system image id %s, positions is %d, length is %d\n", id, start_pos, length)
+			io.Copy(img_file, sparse_file)
+			fmt.Printf("%s image id %s, positions is %d, length is %d\n", image, id, start_pos, length)
 		}
 	}
+	padding = 128 * 1024 * 1024
+	last_pos = padding + start_pos + length - 1
+	img_file.Seek(last_pos, os.SEEK_SET)
+	end_byte := []byte{0x00}
+	img_file.Write(end_byte)
+	fmt.Printf("generate %s/%s.raw compelet", output_path, image)
 }
