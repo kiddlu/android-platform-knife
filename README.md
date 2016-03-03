@@ -1,8 +1,8 @@
-##Android Host Tools Standalone
+##Android Host Knife
 
-#### How to use?
+#### How to build?
 
-	cd android-host-tools-standalone/
+	cd android-host-knife/
 	make CROSS_COMPILE=$(if-you-need)
 	source setenv.sh
 
@@ -10,8 +10,8 @@
 	Linux   work well
 	MacOS   not test
 	Cygwin  work well
-	MinGW   some bugs in mkbootfs(packramdisk.sh, symbol link issue)
+	MinGW   bug in mkbootfs(packramdisk.sh, symbol link issue)
 
 #####TODO
-	fix bugs on MinGW if possible
+	fix bug on MinGW if possible
 	
