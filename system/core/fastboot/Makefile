@@ -2,9 +2,6 @@ CC = $(CROSS_COMPILE)gcc
 
 COMPILER = $(shell $(CC) -dM -E -  < /dev/null | grep _WIN32 > /dev/null && echo "mingw"  || echo "none")
 ifeq ($(COMPILER), none)
-COMPILER = $(shell $(CC) -dM -E -  < /dev/null | grep __CYGWIN__ > /dev/null && echo "cygwin"  || echo "none")
-endif
-ifeq ($(COMPILER), none)
 COMPILER = linux
 endif
 
@@ -21,11 +18,6 @@ CFLAGS += -I../include -I../mkbootimg -I../libsparse/include -I../../extras/ext4
 
 ifeq ($(COMPILER), linux)
 SRC += usb_linux.c util_linux.c
-endif
-ifeq ($(COMPILER), cygwin)
-SRC += usb_windows.c util_windows.c
-CFLAGS += -lpthread -I../../../development/host/windows/usb/api
-DEPEND_STATIC_LIB += ../../../development/host/windows/prebuild/usb/AdbWinApi.a
 endif
 ifeq ($(COMPILER), mingw)
 SRC += usb_windows.c util_windows.c
