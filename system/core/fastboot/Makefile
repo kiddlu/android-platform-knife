@@ -22,6 +22,16 @@ CFLAGS += -I../include -I../mkbootimg -I../libsparse/include -I../../extras/ext4
 ifeq ($(COMPILER), linux)
 SRC += usb_linux.c util_linux.c
 endif
+ifeq ($(COMPILER), cygwin)
+SRC += usb_windows.c util_windows.c
+CFLAGS += -lpthread -I../../../development/host/windows/usb/api
+DEPEND_STATIC_LIB += ../../../development/host/windows/prebuild/usb/AdbWinApi.a
+endif
+ifeq ($(COMPILER), mingw)
+SRC += usb_windows.c util_windows.c
+CFLAGS += -lws2_32 -I../../../development/host/windows/usb/api -DUSE_MINGW
+DEPEND_STATIC_LIB += ../../../development/host/windows/prebuild/usb/AdbWinApi.a
+endif
 
 $(TARGET_EXE):$(OBJ) $(DEPEND_STATIC_LIB);$(CC) -o $@ $^
 $(filter %.o,$(OBJ)):%.o:%.c;$(CC) $(CFLAGS) -c -o $@ $<

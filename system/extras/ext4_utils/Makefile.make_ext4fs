@@ -1,6 +1,6 @@
 CC = $(CROSS_COMPILE)gcc
 
-FOR_WINDOWS = $(shell $(CC) -dM -E -  < /dev/null | grep _WIN32 > null && echo "yes"  || echo "no")
+FOR_WINDOWS = $(shell $(CC) -dM -E -  < /dev/null | grep _WIN32 > /dev/null && echo "yes"  || echo "no")
 
 TARGET=make_ext4fs
 TARGET_EXE=$(TARGET)
