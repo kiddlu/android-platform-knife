@@ -1,0 +1,23 @@
+CC = $(CROSS_COMPILE)gcc
+AR = $(CROSS_COMPILE)ar
+
+TARGET = libunz
+TARGET_STATIC_LIB = $(TARGET).a
+
+SRC = adler32.c compress.c crc32.c deflate.c gzclose.c gzlib.c gzread.c gzwrite.c infback.c \
+		inflate.c inftrees.c inffast.c trees.c uncompr.c zutil.c
+OBJ = $(SRC:.c=.o)
+
+CFLAGS = -Wall -Werror
+CFLAGS += -I../include -O3 -DUSE_MMAP
+
+$(TARGET_STATIC_LIB):$(OBJ);$(AR) -r $(TARGET_STATIC_LIB) $(OBJ)
+$(filter %.o,$(OBJ)):%.o:src/%.c;$(CC) $(CFLAGS) -c -o $@ $<
+
+.PHONY:install
+install:
+	 mv $(TARGET_STATIC_LIB) ../../output/lib/
+
+.PHONY:clean
+clean:
+	 rm -f $(OBJ) $(TARGET_STATIC_LIB)
