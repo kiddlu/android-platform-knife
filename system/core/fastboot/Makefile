@@ -22,7 +22,7 @@ endif
 ifeq ($(COMPILER), mingw)
 SRC += usb_windows.c util_windows.c
 CFLAGS += -I../../../development/host/windows/usb/api -DUSE_MINGW
-DEPEND_STATIC_LIB += ../../../development/host/windows/prebuild/usb/AdbWinApi.a
+DEPEND_STATIC_LIB += ../../../prebuild/host/windows-x64/AdbWinApi.lib
 LDFLAGS += -lws2_32
 endif
 
