@@ -3,8 +3,8 @@
 set WDKROOT=C:\WinDDK\7600.16385.1\
 set THIS_PATH=%~dp0
 
-call %THIS_PATH%\setenv.bat %WDKROOT% fre x64 WIN7
-::call %THIS_PATH%\setenv.bat %WDKROOT% fre x86 WIN7
+call %THIS_PATH%\setenv.bat %WDKROOT% fre x64
+::call %THIS_PATH%\setenv.bat %WDKROOT% fre x86
 
 cd %THIS_PATH%\usb\api\
 build.exe -cbeEIFZ
