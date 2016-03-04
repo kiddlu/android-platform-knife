@@ -33,6 +33,13 @@ STL_VER         = 60
 # Use multithreaded libraries
 USE_LIBCMT      = 1
 
+!IF "$(BUILD_DEFAULT_TARGETS)" == "-amd64"
+# C defines for release (free) builds
+TARGETARCH = amd64
+!ELSE
+TARGETARCH = i386
+!ENDIF
+
 # Include directories
 INCLUDES = $(DDK_INC_PATH);           \
            $(SDK_INC_PATH);           \
@@ -52,7 +59,7 @@ TARGETLIBS = $(SDK_LIB_PATH)\ole32.lib    \
              $(SDK_LIB_PATH)\setupapi.lib \
              $(SDK_LIB_PATH)\usbd.lib     \
              $(SDK_LIB_PATH)\winusb.lib   \
-             ..\api\obj$(BUILD_ALT_DIR)\i386\AdbWinApi.lib
+             ..\api\obj$(BUILD_ALT_DIR)\$(TARGETARCH)\AdbWinApi.lib
 
 !IF "$(DDKBUILDENV)" == "fre"
 # Libraries for release (free) builds

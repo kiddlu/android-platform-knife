@@ -27,9 +27,16 @@ USE_STATIC_ATL  = 1
 # Use multithreaded libraries
 USE_LIBCMT      = 1
 
+!IF "$(BUILD_DEFAULT_TARGETS)" == "-amd64"
+# C defines for release (free) builds
+TARGETARCH = amd64
+!ELSE
+TARGETARCH = i386
+!ENDIF
+
 TARGETLIBS=$(SDK_LIB_PATH)\ole32.lib    \
            $(SDK_LIB_PATH)\oleaut32.lib \
-           ..\api\obj$(BUILD_ALT_DIR)\i386\AdbWinApi.lib
+           ..\api\obj$(BUILD_ALT_DIR)\$(TARGETARCH)\AdbWinApi.lib
 
 INCLUDES=$(DDK_INC_PATH)\;$(SDK_INC_PATH)\;$(CRT_INC_PATH)\;$(ATL_INC_PATH)\api
 
