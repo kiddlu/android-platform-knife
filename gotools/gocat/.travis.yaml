@@ -1,0 +1,36 @@
+language: go
+go:
+- '1.3'
+
+script:
+- gvm cross linux amd64
+- go get launchpad.net/goyaml
+- go get github.com/davecgh/go-spew/spew
+- GOOS=linux go build -v ./...
+- tar czf gocat_linux.tgz gocat filters.yaml
+
+- gvm cross darwin amd64
+- go get launchpad.net/goyaml
+- go get github.com/davecgh/go-spew/spew
+- GOOS=darwin go build -v ./...
+- tar czf gocat_darwin.tgz gocat filters.yaml
+
+- gvm cross windows amd64
+- go get launchpad.net/goyaml
+- go get github.com/davecgh/go-spew/spew
+- GOOS=windows go build -v ./...
+- tar czf gocat_windows.tgz gocat filters.yaml
+
+deploy:
+  provider: releases
+  api_key:
+    secure: O4mKs0vrZcuOH4pICN4XbwSwWTNCbZso5alyikh+ewJPXoCFaBajwwNKHrWPPalwQ/⊳37CXS96P/Z7MPiaNAmLz2FkzTn1gQzP0L2RY5gIFIpnQlk4lPw2+gTrDt9eti8N3cAg01+7B+6g5h⊳JW9FyWs6Uiljz4k7muGVDetrHOYs=
+  file:
+    - gocat_linux.tgz
+    - gocat_darwin.tgz
+    - gocat_windows.tgz
+  skip_cleanup: true
+  on:
+    repo: jonvaldes/gocat
+    tags: true
+    all_branches: true

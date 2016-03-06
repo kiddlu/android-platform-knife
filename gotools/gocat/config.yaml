@@ -1,0 +1,15 @@
+filters:
+#print all
+    - ^*
+#print Error only
+#    - ^E/
+#print art
+#    - ^./art
+#print I/DEBUG
+#    - ^I/DEBUG
+
+highlights:
+  "^I/.*": g
+  "^E/.*": r
+  "^W/.*": y
+  "^D/.*": b
