@@ -65,7 +65,8 @@ func main() {
 
 	var img_start_sector int64
 	var length int64
-	var start_pos, last_pos, padding int64
+	var start_pos int64
+//	var last_pos, padding int64
 
 	img_file, err := os.Create(output_path + "/" + image + ".raw")
 	if err != nil {
@@ -90,10 +91,10 @@ func main() {
 			fmt.Printf("%s image id %s, positions is %d, length is %d\n", image, id, start_pos, length)
 		}
 	}
-	padding = 128 * 1024 * 1024
-	last_pos = padding + start_pos + length - 1
-	img_file.Seek(last_pos, os.SEEK_SET)
-	end_byte := []byte{0x00}
-	img_file.Write(end_byte)
+//	padding = 128 * 1024 * 1024
+//	last_pos = padding + start_pos + length - 1
+//	img_file.Seek(last_pos, os.SEEK_SET)
+//	end_byte := []byte{0x00}
+//	img_file.Write(end_byte)
 	fmt.Printf("generate %s/%s.raw compelet", output_path, image)
 }
