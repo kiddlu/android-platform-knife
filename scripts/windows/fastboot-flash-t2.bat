@@ -5,10 +5,13 @@ set ADB_EXE=%DIR_PATH%\apps\adb.exe
 set FASTBOOT_EXE=%DIR_PATH%\apps\fastboot.exe
 set IMG2SIMG_EXE=%DIR_PATH%\apps\img2simg.exe
 set PACKSPARSEIMG_EXE=%DIR_PATH%\apps\packsparseimg.exe
+set BUSYBOX_EXE=%DIR_PATH%\apps\busybox.exe
 
 set FLASH_FULL=0
 set FLASH_USERDATA=0
+set FLASH_MASTERCLEAN=0
 
+%ADB_EXE% wait-for-device
 %ADB_EXE% reboot bootloader
 
 rem AP
@@ -68,15 +71,27 @@ if %FLASH_USERDATA% == 1 (
 rem reboot
 %FASTBOOT_EXE% reboot
 
-rem do master clean if not flash userdata partition
-if not %FLASH_USERDATA% == 1 (
-	%ADB_EXE% wait-for-device
-	%BUSYBOX_EXE% sleep 20
-	%ADB_EXE% shell am broadcast -a android.intent.action.MASTER_CLEAR
-)
+rem maybe should do master clean if not flash userdata partition
+if %FLASH_USERDATA% == 1 goto END
+if %FLASH_MASTERCLEAN% == 0 goto END
 
+%ADB_EXE% wait-for-device
+%BUSYBOX_EXE% sleep 5
+:LOOP
+set BOOTFLAG=0
+%ADB_EXE% shell getprop sys.boot_completed > "%TMP%\boot_completed"
+set /p BOOTFLAG=<"%TMP%\boot_completed"
+if %BOOTFLAG% == 0 (
+	echo waiting...
+	%BUSYBOX_EXE% sleep 5
+	goto LOOP
+)
+%ADB_EXE% shell am broadcast -a android.intent.action.MASTER_CLEAR
+
+:END
 echo ###################################
 echo ###### Fastboot Flash Done!! ######
 echo ###################################
+echo.
 
 pause
