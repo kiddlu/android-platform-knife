@@ -1,3 +1,11 @@
+::  This is fastboot flash batch file for surabaya/colombo.
+::  Make sure you phone can "adb reboot bootloader" to fastboot mode
+::  and make sure "fastboot flash" can work on your phone. 
+::  if you want full flash, "set FLASH_FULL=1", it will flash persist partition and others.
+::  if you want flash userdata, "set FLASH_USERDATA=1", it will take a lot time.
+::  Or if you don't want to flash userdata partition,  "set FLASH_MASTERCLEAN=1",
+::  it will do master clean(clean all userdata) when first boot.
+
 @echo OFF
 set DIR_PATH=%~dp0
 
