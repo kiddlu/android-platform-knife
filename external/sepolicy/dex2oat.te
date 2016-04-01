@@ -1,0 +1,18 @@
+# dex2oat
+type dex2oat, domain;
+type dex2oat_exec, exec_type, file_type;
+
+allow dex2oat dalvikcache_data_file:file write;
+# Read symlinks in /data/dalvik-cache
+allow dex2oat dalvikcache_data_file:lnk_file read;
+allow dex2oat installd:fd use;
+
+# Read already open asec_apk_file file descriptors passed by installd.
+# Also allow reading unlabeled files, to allow for upgrading forward
+# locked APKs.
+allow dex2oat asec_apk_file:file read;
+allow dex2oat unlabeled:file read;
+allow dex2oat oemfs:file read;
+
+allow dex2oat dalvikcache_arm64_data_file:file read;
+allow dex2oat dalvikcache_arm64_data_file:file write;

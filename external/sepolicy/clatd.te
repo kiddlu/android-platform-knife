@@ -1,0 +1,22 @@
+# 464xlat daemon
+type clatd, domain;
+type clatd_exec, exec_type, file_type;
+
+net_domain(clatd)
+
+# Access objects inherited from netd.
+allow clatd netd:fd use;
+allow clatd netd:fifo_file { read write };
+# TODO: Check whether some or all of these sockets should be close-on-exec.
+allow clatd netd:netlink_kobject_uevent_socket { read write };
+allow clatd netd:netlink_nflog_socket { read write };
+allow clatd netd:netlink_route_socket { read write };
+allow clatd netd:udp_socket { read write };
+allow clatd netd:unix_stream_socket { read write };
+allow clatd netd:unix_dgram_socket { read write };
+
+allow clatd self:capability { net_admin net_raw setuid setgid };
+
+allow clatd self:netlink_route_socket nlmsg_write;
+allow clatd self:{ packet_socket rawip_socket tun_socket } create_socket_perms;
+allow clatd tun_device:chr_file rw_file_perms;

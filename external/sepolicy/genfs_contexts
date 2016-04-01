@@ -1,0 +1,34 @@
+# Label inodes with the fs label.
+genfscon rootfs / u:object_r:rootfs:s0
+# proc labeling can be further refined (longest matching prefix).
+genfscon proc / u:object_r:proc:s0
+genfscon proc /net u:object_r:proc_net:s0
+genfscon proc /net/xt_qtaguid/ctrl u:object_r:qtaguid_proc:s0
+genfscon proc /cpuinfo u:object_r:proc_cpuinfo:s0
+genfscon proc /sysrq-trigger u:object_r:proc_sysrq:s0
+genfscon proc /sys/fs/protected_hardlinks u:object_r:proc_security:s0
+genfscon proc /sys/fs/protected_symlinks u:object_r:proc_security:s0
+genfscon proc /sys/fs/suid_dumpable u:object_r:proc_security:s0
+genfscon proc /sys/kernel/core_pattern u:object_r:usermodehelper:s0
+genfscon proc /sys/kernel/dmesg_restrict u:object_r:proc_security:s0
+genfscon proc /sys/kernel/hotplug u:object_r:usermodehelper:s0
+genfscon proc /sys/kernel/kptr_restrict u:object_r:proc_security:s0
+genfscon proc /sys/kernel/modprobe u:object_r:usermodehelper:s0
+genfscon proc /sys/kernel/modules_disabled u:object_r:proc_security:s0
+genfscon proc /sys/kernel/poweroff_cmd u:object_r:usermodehelper:s0
+genfscon proc /sys/kernel/randomize_va_space u:object_r:proc_security:s0
+genfscon proc /sys/kernel/usermodehelper u:object_r:usermodehelper:s0
+genfscon proc /sys/net u:object_r:proc_net:s0
+genfscon proc /sys/vm/mmap_min_addr u:object_r:proc_security:s0
+# selinuxfs booleans can be individually labeled.
+genfscon selinuxfs / u:object_r:selinuxfs:s0
+genfscon cgroup / u:object_r:cgroup:s0
+# sysfs labels can be set by userspace.
+genfscon sysfs / u:object_r:sysfs:s0
+genfscon inotifyfs / u:object_r:inotify:s0
+genfscon vfat / u:object_r:vfat:s0
+genfscon debugfs / u:object_r:debugfs:s0
+genfscon fuse / u:object_r:fuse:s0
+genfscon pstore / u:object_r:pstorefs:s0
+genfscon functionfs / u:object_r:functionfs:s0
+genfscon usbfs / u:object_r:usbfs:s0

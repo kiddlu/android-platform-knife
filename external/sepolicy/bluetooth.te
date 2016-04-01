@@ -1,0 +1,61 @@
+# bluetooth subsystem
+type bluetooth, domain;
+app_domain(bluetooth)
+net_domain(bluetooth)
+
+# Data file accesses.
+allow bluetooth bluetooth_data_file:dir create_dir_perms;
+allow bluetooth bluetooth_data_file:notdevfile_class_set create_file_perms;
+
+# Socket creation under /data/misc/bluedroid.
+type_transition bluetooth bluetooth_data_file:sock_file bluetooth_socket;
+allow bluetooth bluetooth_socket:sock_file create_file_perms;
+
+# bluetooth factory file accesses.
+r_dir_file(bluetooth, bluetooth_efs_file)
+
+# Device accesses.
+allow bluetooth { tun_device uhid_device hci_attach_dev }:chr_file rw_file_perms;
+
+# Other domains that can create and use bluetooth sockets.
+# SELinux does not presently define a specific socket class for
+# bluetooth sockets, nor does it distinguish among the bluetooth protocols.
+# TODO: This should no longer be needed with bluedroid for bluetooth
+# but may be getting used for other non-bluetooth sockets that has no
+# specific class defined.  Consider taking to specific domains.
+allow bluetoothdomain self:socket create_socket_perms;
+
+# sysfs access.
+allow bluetooth sysfs_bluetooth_writable:file rw_file_perms;
+allow bluetooth self:capability net_admin;
+allow bluetooth self:capability2 wake_alarm;
+
+# Allow clients to use a socket provided by the bluetooth app.
+# TODO:  See if this is still required under bluedroid.
+allow bluetoothdomain bluetooth:unix_stream_socket { getopt setopt getattr read write ioctl shutdown };
+
+# tethering
+allow bluetooth self:tun_socket create_socket_perms;
+allow bluetooth efs_file:dir search;
+
+# Talk to init over the property socket.
+unix_socket_connect(bluetooth, property, init)
+
+# proc access.
+allow bluetooth proc_bluetooth_writable:file rw_file_perms;
+
+# Allow write access to bluetooth specific properties
+allow bluetooth bluetooth_prop:property_service set;
+allow bluetooth pan_result_prop:property_service set;
+allow bluetooth ctl_dhcp_pan_prop:property_service set;
+
+###
+### Neverallow rules
+###
+### These are things that the bluetooth app should NEVER be able to do
+###
+
+# Superuser capabilities.
+# bluetooth requires net_admin and wake_alarm.
+neverallow bluetooth self:capability ~net_admin;
+neverallow bluetooth self:capability2 ~wake_alarm;

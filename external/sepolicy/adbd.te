@@ -1,0 +1,84 @@
+# adbd seclabel is specified in init.rc since
+# it lives in the rootfs and has no unique file type.
+type adbd, domain;
+
+userdebug_or_eng(`
+  allow adbd self:process setcurrent;
+  allow adbd su:process dyntransition;
+')
+
+domain_auto_trans(adbd, shell_exec, shell)
+
+# Do not sanitize the environment or open fds of the shell.
+allow adbd shell:process noatsecure;
+
+# Set UID and GID to shell.  Set supplementary groups.
+allow adbd self:capability { setuid setgid };
+
+# Drop capabilities from bounding set on user builds.
+allow adbd self:capability setpcap;
+
+# Create and use network sockets.
+net_domain(adbd)
+
+# Access /dev/android_adb or /dev/usb-ffs/adb/ep0
+allow adbd adb_device:chr_file rw_file_perms;
+allow adbd functionfs:dir search;
+allow adbd functionfs:file rw_file_perms;
+
+# Use a pseudo tty.
+allow adbd devpts:chr_file rw_file_perms;
+
+# adb push/pull /data/local/tmp.
+allow adbd shell_data_file:dir create_dir_perms;
+allow adbd shell_data_file:file create_file_perms;
+
+# adb push/pull sdcard.
+allow adbd sdcard_type:dir create_dir_perms;
+allow adbd sdcard_type:file create_file_perms;
+
+# adb pull /data/anr/traces.txt
+allow adbd anr_data_file:dir r_dir_perms;
+allow adbd anr_data_file:file r_file_perms;
+
+# Set service.adb.*, sys.powerctl properties.
+unix_socket_connect(adbd, property, init)
+allow adbd shell_prop:property_service set;
+allow adbd powerctl_prop:property_service set;
+
+# Run /system/bin/bu
+allow adbd system_file:file rx_file_perms;
+
+# Perform binder IPC to surfaceflinger (screencap)
+# XXX Run screencap in a separate domain?
+binder_use(adbd)
+binder_call(adbd, surfaceflinger)
+# b/13188914
+allow adbd gpu_device:chr_file rw_file_perms;
+
+# Read /data/misc/adb/adb_keys.
+allow adbd adb_keys_file:dir search;
+allow adbd adb_keys_file:file r_file_perms;
+
+userdebug_or_eng(`
+  # Write debugging information to /data/adb
+  # when persist.adb.trace_mask is set
+  # https://code.google.com/p/android/issues/detail?id=72895
+  allow adbd adb_data_file:dir rw_dir_perms;
+  allow adbd adb_data_file:file create_file_perms;
+')
+
+# ndk-gdb invokes adb forward to forward the gdbserver socket.
+allow adbd app_data_file:dir search;
+allow adbd app_data_file:sock_file write;
+allow adbd appdomain:unix_stream_socket connectto;
+
+# b/18078338 - allow read access to executable types on /system
+# to assist with debugging OTA issues.
+allow adbd exec_type:file r_file_perms;
+
+# ndk-gdb invokes adb pull of app_process, linker, and libc.so.
+allow adbd zygote_exec:file r_file_perms;
+allow adbd system_file:file r_file_perms;
+
+allow adbd kernel:security read_policy;

@@ -1,0 +1,27 @@
+type runas, domain, mlstrustedsubject;
+type runas_exec, exec_type, file_type;
+
+# ndk-gdb invokes adb shell run-as.
+domain_auto_trans(shell, runas_exec, runas)
+allow runas adbd:process sigchld;
+allow runas shell:fd use;
+allow runas shell:fifo_file { read write };
+allow runas devpts:chr_file { read write ioctl };
+allow runas shell_data_file:file { read write };
+
+# run-as reads package information.
+allow runas system_data_file:file r_file_perms;
+
+# run-as checks and changes to the app data dir.
+dontaudit runas self:capability dac_override;
+allow runas app_data_file:dir { getattr search };
+
+# run-as switches to the app UID/GID.
+allow runas self:capability { setuid setgid };
+
+# run-as switches to the app security context.
+# read /seapp_contexts and /data/security/seapp_contexts
+security_access_policy(runas)
+selinux_check_context(runas) # validate context
+allow runas self:process setcurrent;
+allow runas non_system_app_set:process dyntransition; # setcon

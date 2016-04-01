@@ -1,0 +1,44 @@
+# File types must be defined for file_contexts.
+type su_exec, exec_type, file_type;
+
+userdebug_or_eng(`
+  # Domain used for su processes, as well as for adbd and adb shell
+  # after performing an adb root command.  The domain definition is
+  # wrapped to ensure that it does not exist at all on -user builds.
+  type su, domain, mlstrustedsubject;
+  domain_auto_trans(shell, su_exec, su)
+
+  # Allow dumpstate to call su on userdebug / eng builds to collect
+  # additional information.
+  domain_auto_trans(dumpstate, su_exec, su)
+
+  # su is also permissive to permit setenforce.
+  permissive su;
+
+  # Add su to various domains
+  net_domain(su)
+  app_domain(su)
+
+  dontaudit su self:capability_class_set *;
+  dontaudit su kernel:security *;
+  dontaudit su kernel:system *;
+  dontaudit su self:memprotect *;
+  dontaudit su domain:process *;
+  dontaudit su domain:fd *;
+  dontaudit su domain:dir *;
+  dontaudit su domain:lnk_file *;
+  dontaudit su domain:{ fifo_file file } *;
+  dontaudit su domain:socket_class_set *;
+  dontaudit su domain:ipc_class_set *;
+  dontaudit su domain:key *;
+  dontaudit su fs_type:filesystem *;
+  dontaudit su {fs_type dev_type file_type}:dir_file_class_set *;
+  dontaudit su node_type:node *;
+  dontaudit su node_type:{ tcp_socket udp_socket rawip_socket } *;
+  dontaudit su netif_type:netif *;
+  dontaudit su port_type:socket_class_set *;
+  dontaudit su port_type:{ tcp_socket dccp_socket } *;
+  dontaudit su domain:peer *;
+  dontaudit su domain:binder *;
+  dontaudit su property_type:property_service *;
+')

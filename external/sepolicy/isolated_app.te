@@ -1,0 +1,20 @@
+###
+### Services with isolatedProcess=true in their manifest.
+###
+### This file defines the rules for isolated apps. An "isolated
+### app" is an APP with UID between AID_ISOLATED_START (99000)
+### and AID_ISOLATED_END (99999).
+###
+### isolated_app includes all the appdomain rules, plus the
+### additional following rules:
+###
+
+type isolated_app, domain;
+app_domain(isolated_app)
+net_domain(isolated_app)
+
+# read and write access to app_data_file is already
+# granted via app.te. Allow execute.
+# Needed to allow dlopen() from Chrome renderer processes.
+# See b/15902433 for details.
+allow isolated_app app_data_file:file execute;

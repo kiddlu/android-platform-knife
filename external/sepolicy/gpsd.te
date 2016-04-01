@@ -1,0 +1,20 @@
+# gpsd - GPS daemon
+type gpsd, domain;
+type gpsd_exec, exec_type, file_type;
+
+init_daemon_domain(gpsd)
+net_domain(gpsd)
+allow gpsd gps_data_file:dir rw_dir_perms;
+allow gpsd gps_data_file:notdevfile_class_set create_file_perms;
+# Socket is created by the daemon, not by init, and under /data/gps,
+# not under /dev/socket.
+type_transition gpsd gps_data_file:sock_file gps_socket;
+allow gpsd gps_socket:sock_file create_file_perms;
+# XXX Label sysfs files with a specific type?
+allow gpsd sysfs:file rw_file_perms;
+
+allow gpsd gps_device:chr_file rw_file_perms;
+
+# Execute the shell or system commands.
+allow gpsd shell_exec:file rx_file_perms;
+allow gpsd system_file:file rx_file_perms;

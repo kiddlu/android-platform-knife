@@ -1,0 +1,18 @@
+# Rules common to all binder service domains
+
+# Allow dumpstate to collect information from binder services
+allow binderservicedomain dumpstate:fd use;
+allow binderservicedomain dumpstate:unix_stream_socket { read write getopt getattr };
+allow binderservicedomain shell_data_file:file { getattr write };
+
+# Allow dumpsys to work from adb shell or the serial console
+allow binderservicedomain devpts:chr_file rw_file_perms;
+allow binderservicedomain console_device:chr_file rw_file_perms;
+
+# Receive and write to a pipe received over Binder from an app.
+allow binderservicedomain appdomain:fd use;
+allow binderservicedomain appdomain:fifo_file write;
+
+allow binderservicedomain keystore:keystore_key { test get insert delete exist saw sign verify };
+
+use_keystore(binderservicedomain)

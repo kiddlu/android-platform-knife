@@ -1,0 +1,357 @@
+###
+### Domain for all zygote spawned apps
+###
+### This file is the base policy for all zygote spawned apps.
+### Other policy files, such as isolated_app.te, untrusted_app.te, etc
+### extend from this policy. Only policies which should apply to ALL
+### zygote spawned apps should be added here.
+###
+
+# Dalvik Compiler JIT Mapping.
+allow appdomain self:process execmem;
+allow appdomain ashmem_device:chr_file execute;
+
+# Receive and use open file descriptors inherited from zygote.
+allow appdomain zygote:fd use;
+
+# gdbserver for ndk-gdb reads the zygote.
+# valgrind needs mmap exec for zygote
+allow appdomain zygote_exec:file rx_file_perms;
+
+# gdbserver for ndk-gdb ptrace attaches to app process.
+allow appdomain self:process ptrace;
+
+# Read system properties managed by zygote.
+allow appdomain zygote_tmpfs:file read;
+
+# Notify zygote of death;
+allow appdomain zygote:process sigchld;
+
+# Notify shell and adbd of death when spawned via runas for ndk-gdb.
+allow appdomain shell:process sigchld;
+allow appdomain adbd:process sigchld;
+
+# child shell or gdbserver pty access for runas.
+allow appdomain devpts:chr_file { getattr read write ioctl };
+
+# Use pipes and sockets provided by system_server via binder or local socket.
+allow appdomain system_server:fifo_file rw_file_perms;
+allow appdomain system_server:unix_stream_socket { read write setopt getattr getopt shutdown };
+allow appdomain system_server:tcp_socket { read write getattr getopt shutdown };
+
+# Communication with other apps via fifos
+allow appdomain appdomain:fifo_file rw_file_perms;
+
+# Communicate with surfaceflinger.
+allow appdomain surfaceflinger:unix_stream_socket { read write setopt getattr getopt shutdown };
+
+# App sandbox file accesses.
+allow appdomain app_data_file:dir create_dir_perms;
+allow appdomain app_data_file:notdevfile_class_set create_file_perms;
+
+# lib subdirectory of /data/data dir is system-owned.
+allow appdomain system_data_file:dir r_dir_perms;
+allow appdomain system_data_file:file { execute execute_no_trans open execmod };
+
+# Keychain and user-trusted credentials
+allow appdomain keychain_data_file:dir r_dir_perms;
+allow appdomain keychain_data_file:file r_file_perms;
+allow appdomain misc_user_data_file:dir r_dir_perms;
+allow appdomain misc_user_data_file:file r_file_perms;
+
+# Access to OEM provided data and apps
+allow appdomain oemfs:dir r_dir_perms;
+allow appdomain oemfs:file rx_file_perms;
+
+# Execute the shell or other system executables.
+allow appdomain shell_exec:file rx_file_perms;
+allow appdomain system_file:file rx_file_perms;
+
+# Execute dex2oat when apps call dexclassloader
+allow appdomain dex2oat_exec:file rx_file_perms;
+
+# Read/write wallpaper file (opened by system).
+allow appdomain wallpaper_file:file { getattr read write };
+
+# Write to /data/anr/traces.txt.
+allow appdomain anr_data_file:dir search;
+allow appdomain anr_data_file:file { open append };
+
+# Allow apps to send dump information to dumpstate
+allow appdomain dumpstate:fd use;
+allow appdomain dumpstate:unix_stream_socket { read write getopt getattr shutdown };
+allow appdomain shell_data_file:file { write getattr };
+
+# Write to /proc/net/xt_qtaguid/ctrl file.
+allow appdomain qtaguid_proc:file rw_file_perms;
+# Everybody can read the xt_qtaguid resource tracking misc dev.
+# So allow all apps to read from /dev/xt_qtaguid.
+allow appdomain qtaguid_device:chr_file r_file_perms;
+
+# Grant GPU access to all processes started by Zygote.
+# They need that to render the standard UI.
+allow appdomain gpu_device:chr_file { rw_file_perms execute };
+
+# Use the Binder.
+binder_use(appdomain)
+# Perform binder IPC to binder services.
+binder_call(appdomain, binderservicedomain)
+# Perform binder IPC to other apps.
+binder_call(appdomain, appdomain)
+
+# Already connected, unnamed sockets being passed over some other IPC
+# hence no sock_file or connectto permission. This appears to be how
+# Chrome works, may need to be updated as more apps using isolated services
+# are examined.
+allow appdomain appdomain:unix_stream_socket { getopt getattr read write shutdown };
+
+# Backup ability for every app. BMS opens and passes the fd
+# to any app that has backup ability. Hence, no open permissions here.
+allow appdomain backup_data_file:file { read write getattr };
+allow appdomain cache_backup_file:file { read write getattr };
+allow appdomain cache_backup_file:dir getattr;
+# Backup ability using 'adb backup'
+allow appdomain system_data_file:lnk_file getattr;
+
+# Allow read/stat of /data/media files passed by Binder or local socket IPC.
+allow appdomain media_rw_data_file:file { read getattr };
+
+# Read and write /data/data/com.android.providers.telephony files passed over Binder.
+allow appdomain radio_data_file:file { read write getattr };
+
+# Read and write system app data files passed over Binder.
+# Motivating case was /data/data/com.android.settings/cache/*.jpg for
+# cropping or taking user photos.
+allow untrusted_app system_app_data_file:file { read write getattr };
+
+# Access SDcard via the fuse mount.
+allow appdomain fuse:dir create_dir_perms;
+allow appdomain fuse:file create_file_perms;
+
+# Access OBBs (vfat images) mounted by vold (b/17633509)
+allow appdomain vfat:dir r_dir_perms;
+allow appdomain vfat:file r_file_perms;
+
+# Allow apps to use the USB Accessory interface.
+# http://developer.android.com/guide/topics/connectivity/usb/accessory.html
+#
+# USB devices are first opened by the system server (USBDeviceManagerService)
+# and the file descriptor is passed to the right Activity via binder.
+allow appdomain usb_device:chr_file { read write getattr ioctl };
+allow appdomain usbaccessory_device:chr_file { read write getattr };
+
+# For art.
+allow appdomain dalvikcache_data_file:file execute;
+allow appdomain dalvikcache_data_file:lnk_file r_file_perms;
+
+# /data/dalvik-cache/profiles
+allow appdomain dalvikcache_profiles_data_file:dir { search getattr };
+allow appdomain dalvikcache_profiles_data_file:file rw_file_perms;
+
+# Allow any app to read shared RELRO files.
+allow appdomain shared_relro_file:dir search;
+allow appdomain shared_relro_file:file r_file_perms;
+
+# Allow apps to read/execute installed binaries
+allow appdomain apk_data_file:dir r_dir_perms;
+allow appdomain apk_data_file:file { rx_file_perms execmod };
+
+# /data/resource-cache
+allow appdomain resourcecache_data_file:file r_file_perms;
+allow appdomain resourcecache_data_file:dir r_dir_perms;
+
+###
+### CTS-specific rules
+###
+
+# For cts/tools/device-setup/TestDeviceSetup/src/android/tests/getinfo/RootProcessScanner.java.
+# Reads /proc/pid/status and statm entries to check that
+# no unexpected root processes are running.
+# Also for cts/tests/tests/security/src/android/security/cts/VoldExploitTest.java
+# Reads /proc/pid/cmdline of vold.
+allow appdomain domain:dir { open read search getattr };
+allow appdomain domain:{ file lnk_file } { open read getattr };
+
+# For cts/tests/tests/permission/src/android/permission/cts/FileSystemPermissionTest.java.
+# testRunAsHasCorrectCapabilities
+allow appdomain runas_exec:file getattr;
+# Others are either allowed elsewhere or not desired.
+
+# For cts/tests/tests/security/src/android/security/cts/SELinuxTest.java
+# Check SELinux policy and contexts.
+selinux_check_access(appdomain)
+selinux_check_context(appdomain)
+# Validate that each process is running in the correct security context.
+allow appdomain domain:process getattr;
+
+# logd access
+read_logd(appdomain)
+control_logd(appdomain)
+# application inherit logd write socket (urge is to deprecate this long term)
+allow appdomain zygote:unix_dgram_socket write;
+
+allow appdomain keystore:keystore_key { test get insert delete exist saw sign verify };
+
+use_keystore(appdomain)
+
+###
+### Neverallow rules
+###
+### These are things that Android apps should NEVER be able to do
+###
+
+# Superuser capabilities.
+# bluetooth requires net_admin and wake_alarm.
+neverallow { appdomain -bluetooth } self:capability *;
+neverallow { appdomain -bluetooth } self:capability2 *;
+
+# Block device access.
+neverallow appdomain dev_type:blk_file { read write };
+
+# Access to any of the following character devices.
+neverallow appdomain {
+    audio_device
+    camera_device
+    dm_device
+    radio_device
+    gps_device
+    rpmsg_device
+}:chr_file { read write };
+
+# Note: Try expanding list of app domains in the future.
+neverallow { untrusted_app isolated_app shell } graphics_device:chr_file { read write };
+
+neverallow { appdomain -nfc } nfc_device:chr_file
+    { read write };
+neverallow { appdomain -bluetooth } hci_attach_dev:chr_file
+    { read write };
+neverallow appdomain tee_device:chr_file { read write };
+
+# Privileged netlink socket interfaces.
+neverallow appdomain
+    domain:{
+        netlink_firewall_socket
+        netlink_tcpdiag_socket
+        netlink_nflog_socket
+        netlink_xfrm_socket
+        netlink_audit_socket
+        netlink_ip6fw_socket
+        netlink_dnrt_socket
+    } *;
+
+# These messages are broadcast messages from the kernel to userspace.
+# Do not allow the writing of netlink messages, which has been a source
+# of rooting vulns in the past.
+neverallow appdomain domain:netlink_kobject_uevent_socket { write append };
+
+# Sockets under /dev/socket that are not specifically typed.
+neverallow appdomain socket_device:sock_file write;
+
+# Unix domain sockets.
+neverallow appdomain adbd_socket:sock_file write;
+neverallow appdomain installd_socket:sock_file write;
+neverallow { appdomain -bluetooth -radio -shell -system_app -nfc }
+    property_socket:sock_file write;
+neverallow { appdomain -radio } rild_socket:sock_file write;
+neverallow appdomain vold_socket:sock_file write;
+neverallow appdomain zygote_socket:sock_file write;
+
+# ptrace access to non-app domains.
+neverallow appdomain { domain -appdomain }:process ptrace;
+
+# Write access to /proc/pid entries for any non-app domain.
+neverallow appdomain { domain -appdomain }:file write;
+
+# signal access to non-app domains.
+# sigchld allowed for parent death notification.
+# signull allowed for kill(pid, 0) existence test.
+# All others prohibited.
+neverallow appdomain { domain -appdomain }:process
+    { sigkill sigstop signal };
+
+# Transition to a non-app domain.
+# Exception for the shell domain, can transition to runas, etc.
+neverallow { appdomain -shell } { domain -appdomain }:process
+    { transition dyntransition };
+
+# Write to rootfs.
+neverallow appdomain rootfs:dir_file_class_set
+    { create write setattr relabelfrom relabelto append unlink link rename };
+
+# Write to /system.
+neverallow appdomain system_file:dir_file_class_set
+    { create write setattr relabelfrom relabelto append unlink link rename };
+
+# Write to entrypoint executables.
+neverallow appdomain exec_type:file
+    { create write setattr relabelfrom relabelto append unlink link rename };
+
+# Write to system-owned parts of /data.
+# This is the default type for anything under /data not otherwise
+# specified in file_contexts.  Define a different type for portions
+# that should be writable by apps.
+# Exception for system_app for Settings.
+neverallow { appdomain -system_app }
+    system_data_file:dir_file_class_set
+    { create write setattr relabelfrom relabelto append unlink link rename };
+
+# Write to various other parts of /data.
+neverallow appdomain drm_data_file:dir_file_class_set
+    { create write setattr relabelfrom relabelto append unlink link rename };
+neverallow { appdomain -system_app }
+    gps_data_file:dir_file_class_set
+    { create write setattr relabelfrom relabelto append unlink link rename };
+neverallow { appdomain -platform_app }
+    apk_data_file:dir_file_class_set
+    { create write setattr relabelfrom relabelto append unlink link rename };
+neverallow { appdomain -platform_app }
+    apk_tmp_file:dir_file_class_set
+    { create write setattr relabelfrom relabelto append unlink link rename };
+neverallow { appdomain -platform_app }
+    apk_private_data_file:dir_file_class_set
+    { create write setattr relabelfrom relabelto append unlink link rename };
+neverallow { appdomain -platform_app }
+    apk_private_tmp_file:dir_file_class_set
+    { create write setattr relabelfrom relabelto append unlink link rename };
+neverallow { appdomain -shell }
+    shell_data_file:dir_file_class_set
+    { create setattr relabelfrom relabelto append unlink link rename };
+neverallow { appdomain -bluetooth }
+    bluetooth_data_file:dir_file_class_set
+    { create write setattr relabelfrom relabelto append unlink link rename };
+neverallow appdomain
+    keystore_data_file:dir_file_class_set
+    { create write setattr relabelfrom relabelto append unlink link rename };
+neverallow appdomain
+    systemkeys_data_file:dir_file_class_set
+    { create write setattr relabelfrom relabelto append unlink link rename };
+neverallow appdomain
+    wifi_data_file:dir_file_class_set
+    { create write setattr relabelfrom relabelto append unlink link rename };
+neverallow appdomain
+    dhcp_data_file:dir_file_class_set
+    { create write setattr relabelfrom relabelto append unlink link rename };
+
+# Access to factory files.
+neverallow appdomain efs_file:dir_file_class_set write;
+neverallow { appdomain -shell } efs_file:dir_file_class_set read;
+
+# Write to various pseudo file systems.
+neverallow { appdomain -bluetooth -nfc }
+    sysfs:dir_file_class_set write;
+neverallow appdomain
+    proc:dir_file_class_set write;
+
+# Access to syslog(2) or /proc/kmsg.
+neverallow { appdomain -system_app }
+    kernel:system { syslog_mod syslog_console };
+neverallow { appdomain -system_app -shell }
+    kernel:system syslog_read;
+
+# Ability to perform any filesystem operation other than statfs(2).
+# i.e. no mount(2), unmount(2), etc.
+neverallow appdomain fs_type:filesystem ~getattr;
+
+# Ability to set system properties.
+neverallow { appdomain -system_app -radio -shell -bluetooth -nfc }
+    property_type:property_service set;

@@ -1,0 +1,55 @@
+# Domain for shell processes spawned by ADB or console service.
+type shell, domain, mlstrustedsubject;
+type shell_exec, exec_type, file_type;
+
+# Create and use network sockets.
+net_domain(shell)
+
+# Run app_process.
+# XXX Transition into its own domain?
+app_domain(shell)
+
+# logd access
+read_logd(shell)
+control_logd(shell)
+
+# read files in /data/anr
+allow shell anr_data_file:dir r_dir_perms;
+allow shell anr_data_file:file r_file_perms;
+
+# Access /data/local/tmp.
+allow shell shell_data_file:dir create_dir_perms;
+allow shell shell_data_file:file create_file_perms;
+allow shell shell_data_file:file rx_file_perms;
+allow shell shell_data_file:lnk_file create_file_perms;
+
+# adb bugreport
+unix_socket_connect(shell, dumpstate, dumpstate)
+
+allow shell devpts:chr_file rw_file_perms;
+allow shell tty_device:chr_file rw_file_perms;
+allow shell console_device:chr_file rw_file_perms;
+allow shell input_device:dir r_dir_perms;
+allow shell input_device:chr_file rw_file_perms;
+allow shell system_file:file x_file_perms;
+allow shell shell_exec:file rx_file_perms;
+allow shell zygote_exec:file rx_file_perms;
+
+r_dir_file(shell, apk_data_file)
+
+# Set properties.
+unix_socket_connect(shell, property, init)
+allow shell shell_prop:property_service set;
+allow shell ctl_dumpstate_prop:property_service set;
+allow shell debug_prop:property_service set;
+allow shell powerctl_prop:property_service set;
+
+# systrace support - allow atrace to run
+# debugfs doesn't support labeling individual files, so we have
+# to grant read access to all of /sys/kernel/debug.
+# Directory read access and file write access is already granted
+# in domain.te.
+allow shell debugfs:file r_file_perms;
+
+# allow shell to run dmesg
+allow shell kernel:system syslog_read;

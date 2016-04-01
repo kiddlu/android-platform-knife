@@ -1,0 +1,9 @@
+type hci_attach, domain;
+type hci_attach_exec, exec_type, file_type;
+
+init_daemon_domain(hci_attach)
+
+allow hci_attach kernel:system module_request;
+allow hci_attach hci_attach_dev:chr_file rw_file_perms;
+allow hci_attach bluetooth_efs_file:dir r_dir_perms;
+allow hci_attach bluetooth_efs_file:file r_file_perms;

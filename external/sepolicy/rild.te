@@ -1,0 +1,47 @@
+# rild - radio interface layer daemon
+type rild, domain;
+type rild_exec, exec_type, file_type;
+
+init_daemon_domain(rild)
+net_domain(rild)
+allow rild self:netlink_route_socket nlmsg_write;
+allow rild kernel:system module_request;
+unix_socket_connect(rild, property, init)
+allow rild self:capability { setuid net_admin net_raw };
+allow rild alarm_device:chr_file rw_file_perms;
+allow rild cgroup:dir create_dir_perms;
+allow rild radio_device:chr_file rw_file_perms;
+allow rild radio_device:blk_file r_file_perms;
+allow rild mtd_device:dir search;
+allow rild efs_file:dir create_dir_perms;
+allow rild efs_file:file create_file_perms;
+allow rild shell_exec:file rx_file_perms;
+allow rild bluetooth_efs_file:file r_file_perms;
+allow rild bluetooth_efs_file:dir r_dir_perms;
+allow rild radio_data_file:dir rw_dir_perms;
+allow rild radio_data_file:file create_file_perms;
+allow rild sdcard_type:dir r_dir_perms;
+allow rild system_data_file:dir r_dir_perms;
+allow rild system_data_file:file r_file_perms;
+allow rild system_file:file x_file_perms;
+
+# property service
+allow rild radio_prop:property_service set;
+allow rild net_radio_prop:property_service set;
+allow rild system_radio_prop:property_service set;
+auditallow rild net_radio_prop:property_service set;
+auditallow rild system_radio_prop:property_service set;
+
+# Read/Write to uart driver (for GPS)
+allow rild gps_device:chr_file rw_file_perms;
+
+allow rild tty_device:chr_file rw_file_perms;
+
+# Allow rild to create and use netlink sockets.
+allow rild self:netlink_socket create_socket_perms;
+allow rild self:netlink_kobject_uevent_socket create_socket_perms;
+
+# Access to wake locks
+wakelock_use(rild)
+
+allow rild self:socket create_socket_perms;

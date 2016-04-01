@@ -1,0 +1,96 @@
+# network manager
+type netd, domain;
+type netd_exec, exec_type, file_type;
+
+init_daemon_domain(netd)
+net_domain(netd)
+
+allow netd self:capability { net_admin net_raw kill fsetid };
+# Note: fsetid is deliberately not included above. fsetid checks are
+# triggered by chmod on a directory or file owned by a group other
+# than one of the groups assigned to the current process to see if
+# the setgid bit should be cleared, regardless of whether the setgid
+# bit was even set.  We do not appear to truly need this capability
+# for netd to operate.  Uncomment the dontaudit rule below after
+# sufficient testing of the fsetid removal.
+# dontaudit netd self:capability fsetid;
+
+allow netd self:netlink_kobject_uevent_socket create_socket_perms;
+allow netd self:netlink_route_socket nlmsg_write;
+allow netd self:netlink_nflog_socket create_socket_perms;
+allow netd shell_exec:file rx_file_perms;
+allow netd system_file:file x_file_perms;
+allow netd devpts:chr_file rw_file_perms;
+
+# For /proc/sys/net/ipv[46]/route/flush.
+allow netd proc_net:file write;
+
+# For /sys/modules/bcmdhd/parameters/firmware_path
+# XXX Split into its own type.
+allow netd sysfs:file write;
+
+# Set dhcp lease for PAN connection
+unix_socket_connect(netd, property, init)
+allow netd dhcp_prop:property_service set;
+allow netd system_prop:property_service set;
+auditallow netd system_prop:property_service set;
+
+# Connect to PAN
+domain_auto_trans(netd, dhcp_exec, dhcp)
+allow netd dhcp:process signal;
+
+# Needed to update /data/misc/wifi/hostapd.conf
+# TODO: See what we can do to reduce the need for
+# these capabilities
+allow netd self:capability { dac_override chown fowner };
+
+allow netd wifi_data_file:file create_file_perms;
+allow netd wifi_data_file:dir create_dir_perms;
+allow netd wifi_data_file:sock_file { create setattr unlink write };
+
+# Allow netd to chmod dir /data/misc/dhcp
+allow netd dhcp_data_file:dir create_dir_perms;
+
+allow netd wpa_socket:file create_file_perms;
+allow netd wpa_socket:dir { create_dir_perms read setattr write search };
+allow netd wpa_socket:sock_file { create setattr unlink write };
+
+# Needed to update /data/misc/net/rt_tables
+allow netd net_data_file:file create_file_perms;
+allow netd net_data_file:dir rw_dir_perms;
+
+# Allow netd to spawn hostapd in it's own domain
+domain_auto_trans(netd, hostapd_exec, hostapd)
+allow netd hostapd:process signal;
+allow netd hostapd:unix_dgram_socket sendto;
+
+# Allow netd to spawn dnsmasq in it's own domain
+domain_auto_trans(netd, dnsmasq_exec, dnsmasq)
+allow netd dnsmasq:process signal;
+
+# Allow netd to start clatd in its own domain
+domain_auto_trans(netd, clatd_exec, clatd)
+allow netd clatd:process signal;
+
+allow netd ctl_mdnsd_prop:property_service set;
+
+# Allow netd to operate on sockets that are passed to it.
+allow netd netdomain:{tcp_socket udp_socket rawip_socket dccp_socket tun_socket} {read write getattr setattr getopt setopt};
+allow netd netdomain:fd use;
+
+###
+### Neverallow rules
+###
+### netd should NEVER do any of this
+
+# Block device access.
+neverallow netd dev_type:blk_file { read write };
+
+# ptrace any other app
+neverallow netd { domain }:process ptrace;
+
+# Write to /system.
+neverallow netd system_file:dir_file_class_set write;
+
+# Write to files in /data/data or system files on /data
+neverallow netd { app_data_file system_data_file }:dir_file_class_set write;

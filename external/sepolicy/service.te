@@ -1,0 +1,12 @@
+type bluetooth_service,         service_manager_type;
+type default_android_service,   service_manager_type;
+type drmserver_service,         service_manager_type;
+type healthd_service,           service_manager_type;
+type inputflinger_service,      service_manager_type;
+type keystore_service,          service_manager_type;
+type mediaserver_service,       service_manager_type;
+type nfc_service,               service_manager_type;
+type radio_service,             service_manager_type;
+type surfaceflinger_service,    service_manager_type;
+type system_app_service,        service_manager_type;
+type system_server_service,     service_manager_type;

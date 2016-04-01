@@ -1,0 +1,25 @@
+# ueventd seclabel is specified in init.rc since
+# it lives in the rootfs and has no unique file type.
+type ueventd, domain;
+tmpfs_domain(ueventd)
+write_klog(ueventd)
+security_access_policy(ueventd)
+allow ueventd init:process sigchld;
+allow ueventd self:capability { chown mknod net_admin setgid fsetid sys_rawio dac_override fowner };
+allow ueventd device:file create_file_perms;
+allow ueventd device:chr_file rw_file_perms;
+allow ueventd sysfs:file rw_file_perms;
+allow ueventd sysfs_type:{ file lnk_file } { relabelfrom relabelto setattr getattr };
+allow ueventd sysfs_type:dir { relabelfrom relabelto setattr r_dir_perms };
+allow ueventd sysfs_devices_system_cpu:file rw_file_perms;
+allow ueventd tmpfs:chr_file rw_file_perms;
+allow ueventd dev_type:dir create_dir_perms;
+allow ueventd dev_type:lnk_file { create unlink };
+allow ueventd dev_type:chr_file { create setattr unlink };
+allow ueventd dev_type:blk_file { create setattr unlink };
+allow ueventd self:netlink_kobject_uevent_socket create_socket_perms;
+allow ueventd efs_file:dir search;
+allow ueventd efs_file:file r_file_perms;
+
+# Use setfscreatecon() to label /dev directories and files.
+allow ueventd self:process setfscreate;

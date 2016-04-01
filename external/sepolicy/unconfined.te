@@ -1,0 +1,90 @@
+#######################################################
+#
+# This is the unconfined template. This template is the base policy
+# which is used by daemons and other privileged components of
+# Android.
+#
+# Historically, this template was called "unconfined" because it
+# allowed the domain to do anything it wanted. Over time,
+# this has changed, and will continue to change in the future.
+# The rules in this file will be removed when no remaining
+# unconfined domains require it, or when the rules contradict
+# Android security best practices. Domains which need rules not
+# provided by the unconfined template should add them directly to
+# the relevant policy.
+#
+# The use of this template is discouraged.
+######################################################
+
+allow unconfineddomain self:capability ~{ sys_ptrace sys_rawio mknod sys_module audit_write audit_control linux_immutable };
+allow unconfineddomain self:capability2 ~{ mac_override mac_admin };
+allow unconfineddomain kernel:security ~{ load_policy setenforce setcheckreqprot setbool setsecparam };
+allow unconfineddomain kernel:system ~{ syslog_read syslog_mod syslog_console };
+allow unconfineddomain domain:fd *;
+allow unconfineddomain domain:dir r_dir_perms;
+allow unconfineddomain domain:lnk_file r_file_perms;
+allow unconfineddomain domain:{ fifo_file file } rw_file_perms;
+allow unconfineddomain domain:{
+    socket
+    netlink_socket
+    key_socket
+    unix_stream_socket
+    unix_dgram_socket
+    netlink_route_socket
+    netlink_firewall_socket
+    netlink_tcpdiag_socket
+    netlink_nflog_socket
+    netlink_xfrm_socket
+    netlink_selinux_socket
+    netlink_audit_socket
+    netlink_ip6fw_socket
+    netlink_dnrt_socket
+    netlink_kobject_uevent_socket
+    tun_socket
+} *;
+allow unconfineddomain domain:ipc_class_set *;
+allow unconfineddomain domain:key *;
+allow unconfineddomain {fs_type -contextmount_type -sdcard_type}:{ dir lnk_file sock_file fifo_file } ~relabelto;
+allow unconfineddomain dev_type:{ dir lnk_file sock_file fifo_file } ~relabelto;
+allow unconfineddomain {
+    file_type
+    -keystore_data_file
+    -property_data_file
+    -system_file
+    -exec_type
+    -security_file
+    -shell_data_file
+    -app_data_file
+}:{ dir lnk_file sock_file fifo_file } ~relabelto;
+allow unconfineddomain exec_type:dir r_dir_perms;
+allow unconfineddomain exec_type:file { r_file_perms execute };
+allow unconfineddomain exec_type:lnk_file r_file_perms;
+allow unconfineddomain system_file:dir r_dir_perms;
+allow unconfineddomain system_file:file { r_file_perms execute };
+allow unconfineddomain system_file:lnk_file r_file_perms;
+allow unconfineddomain {
+    fs_type
+    -usermodehelper
+    -proc_security
+    -contextmount_type
+    -rootfs
+    -sdcard_type
+}:{ chr_file file } ~{entrypoint execute_no_trans execmod execute relabelto};
+allow unconfineddomain {dev_type -kmem_device}:{ chr_file file } ~{entrypoint execute_no_trans execmod execute relabelto};
+allow unconfineddomain {
+    file_type
+    -keystore_data_file
+    -property_data_file
+    -system_file
+    -exec_type
+    -security_file
+    -shell_data_file
+    -app_data_file
+}:{ chr_file file } ~{entrypoint execute_no_trans execmod execute relabelto};
+allow unconfineddomain rootfs:file execute;
+allow unconfineddomain contextmount_type:dir r_dir_perms;
+allow unconfineddomain contextmount_type:notdevfile_class_set r_file_perms;
+allow unconfineddomain node_type:node *;
+allow unconfineddomain netif_type:netif *;
+allow unconfineddomain domain:peer recv;
+allow unconfineddomain { domain -init }:binder { call transfer set_context_mgr };

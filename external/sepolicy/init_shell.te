@@ -1,0 +1,10 @@
+# Restricted domain for shell processes spawned by init.
+# Normally these are shell commands or scripts invoked via sh
+# from an init*.rc file.  No service should ever run in this domain.
+type init_shell, domain;
+domain_auto_trans(init, shell_exec, init_shell)
+permissive_or_unconfined(init_shell)
+
+# Run helpers from / or /system without changing domain.
+allow init_shell rootfs:file execute_no_trans;
+allow init_shell system_file:file execute_no_trans;

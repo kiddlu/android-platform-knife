@@ -1,0 +1,46 @@
+# healthd seclabel is specified in init.rc since
+# it lives in the rootfs and has no unique file type.
+type healthd, domain;
+
+write_klog(healthd)
+# /dev/__null__ created by init prior to policy load,
+# open fd inherited by healthd.
+allow healthd tmpfs:chr_file { read write };
+
+allow healthd self:capability { net_admin mknod sys_tty_config };
+wakelock_use(healthd)
+allow healthd self:netlink_kobject_uevent_socket create_socket_perms;
+binder_use(healthd)
+binder_service(healthd)
+binder_call(healthd, system_server)
+
+# Write to state file.
+# TODO:  Split into a separate type?
+allow healthd sysfs:file write;
+
+###
+### healthd: charger mode
+###
+
+# Read /sys/fs/pstore/console-ramoops
+# Don't worry about overly broad permissions for now, as there's
+# only one file in /sys/fs/pstore
+allow healthd pstorefs:dir r_dir_perms;
+allow healthd pstorefs:file r_file_perms;
+
+allow healthd graphics_device:dir r_dir_perms;
+allow healthd graphics_device:chr_file rw_file_perms;
+allow healthd input_device:dir r_dir_perms;
+allow healthd input_device:chr_file r_file_perms;
+allow healthd tty_device:chr_file rw_file_perms;
+allow healthd ashmem_device:chr_file execute;
+allow healthd self:process execmem;
+allow healthd proc_sysrq:file rw_file_perms;
+allow healthd self:capability sys_boot;
+
+allow healthd healthd_service:service_manager add;
+
+# Healthd needs to tell init to continue the boot
+# process when running in charger mode.
+unix_socket_connect(healthd, property, init)
+allow healthd system_prop:property_service set;

@@ -1,0 +1,119 @@
+# init switches to init domain (via init.rc).
+type init, domain;
+# init is unconfined.
+unconfined_domain(init)
+tmpfs_domain(init)
+
+allow init self:capability { sys_rawio mknod };
+
+# Run helpers from / or /system without changing domain.
+# We do not include exec_type here since generally those
+# should always involve a domain transition.
+allow init rootfs:file execute_no_trans;
+allow init system_file:file execute_no_trans;
+
+# Running e2fsck or mkswap via fs_mgr.
+allow init dev_type:blk_file rw_file_perms;
+
+# Mounting filesystems.
+# Only allow relabelto for types used in context= mount options,
+# which should all be assigned the contextmount_type attribute.
+# This can be done in device-specific policy via type or typeattribute
+# declarations.
+allow init fs_type:filesystem ~relabelto;
+allow init unlabeled:filesystem ~relabelto;
+allow init contextmount_type:filesystem relabelto;
+
+# Allow read-only access to context= mounted filesystems.
+allow init contextmount_type:dir r_dir_perms;
+allow init contextmount_type:notdevfile_class_set r_file_perms;
+
+# restorecon /adb_keys or any other rootfs files to a more specific type.
+allow init rootfs:file relabelfrom;
+
+# restorecon and restorecon_recursive calls from init.rc files.
+# system/core/init.rc requires at least cache_file and data_file_type.
+# init.<board>.rc files often include device-specific types, so
+# we just allow all file types except /system files here.
+allow init {file_type -system_file -exec_type}:dir_file_class_set relabelto;
+allow init sysfs_type:{ dir file lnk_file } relabelto;
+
+# Unlabeled file access for upgrades from 4.2.
+allow init unlabeled:dir { create_dir_perms relabelfrom };
+allow init unlabeled:notdevfile_class_set { create_file_perms relabelfrom };
+
+# Create /data/security from init.rc post-fs-data.
+allow init security_file:dir { create setattr };
+
+# setprop selinux.reload_policy 1 from init.rc post-fs-data.
+allow init security_prop:property_service set;
+
+# Reload policy upon setprop selinux.reload_policy 1.
+r_dir_file(init, security_file)
+allow init kernel:security load_policy;
+
+# Any operation that can modify the kernel ring buffer, e.g. clear
+# or a read that consumes the messages that were read.
+allow init kernel:system syslog_mod;
+
+# Set usermodehelpers and /proc security settings.
+allow init usermodehelper:file rw_file_perms;
+allow init proc_security:file rw_file_perms;
+
+# Transitions to seclabel processes in init.rc
+domain_trans(init, rootfs, adbd)
+domain_trans(init, rootfs, healthd)
+recovery_only(`
+  domain_trans(init, rootfs, recovery)
+')
+domain_trans(init, shell_exec, shell)
+domain_trans(init, rootfs, ueventd)
+domain_trans(init, rootfs, watchdogd)
+
+# Certain domains need LD_PRELOAD passed from init.
+# https://android-review.googlesource.com/94851
+# For now, allow it to most domains.
+# TODO: scope this down.
+allow init { domain -lmkd }:process noatsecure;
+
+# Support "adb shell stop"
+allow init domain:process sigkill;
+
+# Init creates keystore's directory on boot, and walks through
+# the directory as part of a recursive restorecon.
+allow init keystore_data_file:dir { open create read getattr setattr search };
+allow init keystore_data_file:file { getattr };
+
+# Init creates /data/local/tmp at boot
+allow init shell_data_file:dir { open create read getattr setattr search };
+allow init shell_data_file:file { getattr };
+
+# Use setexeccon(), setfscreatecon(), and setsockcreatecon().
+# setexec is for services with seclabel options.
+# setfscreate is for labeling directories and socket files.
+# setsockcreate is for labeling local/unix domain sockets.
+allow init self:process { setexec setfscreate setsockcreate };
+
+# Create /data/property and files within it.
+allow init property_data_file:dir create_dir_perms;
+allow init property_data_file:file create_file_perms;
+
+# Set any property.
+allow init property_type:property_service set;
+
+# Run "ifup lo" to bring up the localhost interface
+allow init self:udp_socket { create ioctl };
+
+# This line seems suspect, as it should not really need to
+# set scheduling parameters for a kernel domain task.
+allow init kernel:process setsched;
+
+###
+### neverallow rules
+###
+
+# The init domain is only entered via setcon from the kernel domain,
+# never via an exec-based transition.
+neverallow { domain -kernel} init:process dyntransition;
+neverallow domain init:process transition;
+neverallow init { file_type fs_type }:file entrypoint;

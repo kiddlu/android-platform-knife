@@ -1,0 +1,6 @@
+# mdns daemon
+type mdnsd, domain;
+type mdnsd_exec, exec_type, file_type;
+
+init_daemon_domain(mdnsd)
+net_domain(mdnsd)

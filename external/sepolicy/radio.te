@@ -1,0 +1,33 @@
+# phone subsystem
+type radio, domain;
+app_domain(radio)
+net_domain(radio)
+bluetooth_domain(radio)
+binder_service(radio)
+
+# Talks to init via the property socket.
+unix_socket_connect(radio, property, init)
+
+# Talks to rild via the rild socket.
+unix_socket_connect(radio, rild, rild)
+
+# Data file accesses.
+allow radio radio_data_file:dir create_dir_perms;
+allow radio radio_data_file:notdevfile_class_set create_file_perms;
+
+allow radio alarm_device:chr_file rw_file_perms;
+
+allow radio net_data_file:dir search;
+allow radio net_data_file:file r_file_perms;
+
+# Property service
+allow radio radio_prop:property_service set;
+allow radio net_radio_prop:property_service set;
+allow radio system_radio_prop:property_service set;
+auditallow radio net_radio_prop:property_service set;
+auditallow radio system_radio_prop:property_service set;
+
+# ctl interface
+allow radio ctl_rildaemon_prop:property_service set;
+
+allow radio radio_service:service_manager add;

@@ -1,0 +1,70 @@
+# surfaceflinger - display compositor service
+type surfaceflinger, domain;
+type surfaceflinger_exec, exec_type, file_type;
+
+init_daemon_domain(surfaceflinger)
+typeattribute surfaceflinger mlstrustedsubject;
+
+# Talk to init over the property socket.
+unix_socket_connect(surfaceflinger, property, init)
+
+# Perform Binder IPC.
+binder_use(surfaceflinger)
+binder_call(surfaceflinger, binderservicedomain)
+binder_call(surfaceflinger, appdomain)
+binder_call(surfaceflinger, bootanim)
+binder_service(surfaceflinger)
+
+# Binder IPC to bu, presently runs in adbd domain.
+binder_call(surfaceflinger, adbd)
+
+# Read /proc/pid files for Binder clients.
+r_dir_file(surfaceflinger, binderservicedomain)
+r_dir_file(surfaceflinger, appdomain)
+
+# Access the GPU.
+allow surfaceflinger gpu_device:chr_file rw_file_perms;
+
+# Access /dev/graphics/fb0.
+allow surfaceflinger graphics_device:dir search;
+allow surfaceflinger graphics_device:chr_file rw_file_perms;
+
+# Access /dev/video1.
+allow surfaceflinger video_device:dir r_dir_perms;
+allow surfaceflinger video_device:chr_file rw_file_perms;
+
+# Create and use netlink kobject uevent sockets.
+allow surfaceflinger self:netlink_kobject_uevent_socket create_socket_perms;
+
+# Set properties.
+allow surfaceflinger system_prop:property_service set;
+allow surfaceflinger ctl_bootanim_prop:property_service set;
+allow surfaceflinger default_prop:property_service set;
+
+# Use open files supplied by an app.
+allow surfaceflinger appdomain:fd use;
+allow surfaceflinger app_data_file:file { read write };
+
+# Use open file provided by bootanim.
+allow surfaceflinger bootanim:fd use;
+
+# Allow a dumpstate triggered screenshot
+binder_call(surfaceflinger, dumpstate)
+binder_call(surfaceflinger, shell)
+r_dir_file(surfaceflinger, dumpstate)
+
+# Needed on some devices for playing DRM protected content,
+# but seems expected and appropriate for all devices.
+allow surfaceflinger tee:unix_stream_socket connectto;
+allow surfaceflinger tee_device:chr_file rw_file_perms;
+
+allow surfaceflinger surfaceflinger_service:service_manager add;
+
+###
+### Neverallow rules
+###
+### surfaceflinger should NEVER do any of this
+
+# Do not allow accessing SDcard files as unsafe ejection could
+# cause the kernel to kill the process.
+neverallow surfaceflinger sdcard_type:file rw_file_perms;

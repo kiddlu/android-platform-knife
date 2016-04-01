@@ -1,0 +1,67 @@
+# Life begins with the kernel.
+type kernel, domain;
+
+# Run /init before we have switched domains.
+allow kernel rootfs:file execute_no_trans;
+
+# setcon to init domain.
+allow kernel self:process setcurrent;
+allow kernel init:process dyntransition;
+
+# The kernel is unconfined.
+unconfined_domain(kernel)
+
+# cgroup filesystem initialization prior to setting the cgroup root directory label.
+allow kernel unlabeled:dir search;
+
+# Mount usbfs.
+allow kernel usbfs:filesystem mount;
+
+# init direct restorecon calls prior to switching to init domain
+# /dev and /dev/socket
+allow kernel { device socket_device }:dir relabelto;
+# /dev/__properties__
+allow kernel properties_device:file relabelto;
+# /sys
+allow kernel sysfs:{ dir file lnk_file } relabelfrom;
+allow kernel sysfs_type:{ dir file lnk_file } relabelto;
+
+# Initial setenforce by init prior to switching to init domain.
+# We use dontaudit instead of allow to prevent a kernel spawned userspace
+# process from turning off SELinux once enabled.
+dontaudit kernel self:security setenforce;
+
+# Set checkreqprot by init.rc prior to switching to init domain.
+allow kernel self:security setcheckreqprot;
+
+# MTP sync (b/15835289)
+# kernel thread "loop0", used by the loop block device, for ASECs (b/17158723)
+allow kernel sdcard_type:file { read write };
+
+# Allow the kernel to read OBB files from app directories. (b/17428116)
+# Kernel thread "loop0" reads a vold supplied file descriptor.
+# Fixes CTS tests:
+#  * android.os.storage.cts.StorageManagerTest#testMountAndUnmountObbNormal
+#  * android.os.storage.cts.StorageManagerTest#testMountAndUnmountTwoObbs
+allow kernel app_data_file:file read;
+
+###
+### neverallow rules
+###
+
+# The initial task starts in the kernel domain (assigned via
+# initial_sid_contexts), but nothing ever transitions to it.
+neverallow domain kernel:process { transition dyntransition };
+
+# The kernel domain is never entered via an exec, nor should it
+# ever execute a program outside the rootfs without changing to another domain.
+# If you encounter an execute_no_trans denial on the kernel domain, then
+# possible causes include:
+# - The program is a kernel usermodehelper.  In this case, define a domain
+#   for the program and domain_auto_trans() to it.
+# - You failed to setcon u:r:init:s0 in your init.rc and thus your init
+#   program was left in the kernel domain and is now trying to execute
+#   some other program.  Fix your init.rc file.
+# - You are running an exploit which switched to the init task credentials
+#   and is then trying to exec a shell or other program.  You lose!
+neverallow kernel { file_type fs_type -rootfs }:file { entrypoint execute_no_trans };

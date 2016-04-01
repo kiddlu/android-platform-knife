@@ -1,0 +1,109 @@
+# recovery console (used in recovery init.rc for /sbin/recovery)
+
+# Declare the domain unconditionally so we can always reference it
+# in neverallow rules.
+type recovery, domain;
+
+# But the allow rules are only included in the recovery policy.
+# Otherwise recovery is only allowed the domain rules.
+recovery_only(`
+  allow recovery self:capability { chown dac_override fowner fsetid setfcap setuid setgid sys_admin sys_tty_config };
+
+  # Set security contexts on files that are not known to the loaded policy.
+  allow recovery self:capability2 mac_admin;
+
+  # Run helpers from / or /system without changing domain.
+  allow recovery rootfs:file execute_no_trans;
+  allow recovery system_file:file execute_no_trans;
+
+  # Mount filesystems.
+  allow recovery rootfs:dir mounton;
+  allow recovery system_data_file:dir mounton;
+  allow recovery fs_type:filesystem ~relabelto;
+  allow recovery unlabeled:filesystem ~relabelto;
+  allow recovery contextmount_type:filesystem relabelto;
+
+  # Create and relabel files and directories under /system.
+  allow recovery exec_type:{ file lnk_file } { create_file_perms relabelfrom relabelto };
+  allow recovery system_file:{ file lnk_file } { create_file_perms relabelfrom relabelto };
+  allow recovery system_file:dir { create_dir_perms relabelfrom relabelto };
+  allow recovery rootfs:dir { write remove_name rmdir add_name };
+  allow recovery rootfs:lnk_file create;
+  allow recovery media_rw_data_file:dir { search read open };
+  allow recovery media_rw_data_file:file { read getattr open};
+
+  # We may be asked to set an SELinux label for a type not known to the
+  # currently loaded policy. Allow it.
+  allow recovery unlabeled:{ file lnk_file } { create_file_perms relabelfrom relabelto };
+  allow recovery unlabeled:dir { create_dir_perms relabelfrom relabelto };
+
+  # 0eb17d944704b3eb140bb9dded299d3be3aed77e in build/ added SELinux
+  # support to OTAs. However, that code has a bug. When an update occurs,
+  # some directories are inappropriately labeled as exec_type. This is
+  # only transient, and subsequent steps in the OTA script correct this
+  # mistake.
+  # Allow this behavior for now until we can fix the underlying bug.
+  # b/15575013
+  allow recovery exec_type:dir { create_dir_perms relabelfrom relabelto };
+  auditallow recovery exec_type:dir { create_dir_perms relabelfrom relabelto };
+
+  # Write to /proc/sys/vm/drop_caches
+  # TODO: create more specific label?
+  allow recovery proc:file w_file_perms;
+
+  # Write to /sys/class/android_usb/android0/enable.
+  # TODO: create more specific label?
+  allow recovery sysfs:file w_file_perms;
+
+  access_kmsg(recovery)
+
+  # Access /dev/android_adb or /dev/usb-ffs/adb/ep0
+  allow recovery adb_device:chr_file rw_file_perms;
+  allow recovery functionfs:dir search;
+  allow recovery functionfs:file rw_file_perms;
+
+  # Required to e.g. wipe userdata/cache.
+  allow recovery device:dir r_dir_perms;
+  allow recovery block_device:dir r_dir_perms;
+  allow recovery dev_type:blk_file rw_file_perms;
+
+  # GUI
+  allow recovery self:process execmem;
+  allow recovery ashmem_device:chr_file execute;
+  allow recovery graphics_device:chr_file rw_file_perms;
+  allow recovery graphics_device:dir r_dir_perms;
+  allow recovery input_device:dir r_dir_perms;
+  allow recovery input_device:chr_file r_file_perms;
+  allow recovery tty_device:chr_file rw_file_perms;
+
+  # Create /tmp/recovery.log and execute /tmp/update_binary.
+  allow recovery tmpfs:file { create_file_perms x_file_perms };
+  allow recovery tmpfs:dir create_dir_perms;
+
+  # Manage files on /cache
+  allow recovery cache_file:dir create_dir_perms;
+  allow recovery cache_file:file create_file_perms;
+  allow recovery apk_data_file:dir create_dir_perms;
+  allow recovery apk_data_file:file create_file_perms;
+
+  # Reboot the device
+  allow recovery powerctl_prop:property_service set;
+  unix_socket_connect(recovery, property, init)
+
+  # Start/stop adbd via ctl.start adbd
+  allow recovery ctl_default_prop:property_service set;
+
+  # Use setfscreatecon() to label files for OTA updates.
+  allow recovery self:process setfscreate;
+
+  # Allow recovery to create a fuse filesystem, and read files from it.
+  allow recovery fuse_device:chr_file rw_file_perms;
+  allow recovery fuse:dir r_dir_perms;
+  allow recovery fuse:file r_file_perms;
+
+  wakelock_use(recovery)
+
+  # This line seems suspect, as it should not really need to
+  # set scheduling parameters for a kernel domain task.
+  allow recovery kernel:process setsched;
+')

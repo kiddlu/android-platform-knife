@@ -1,0 +1,32 @@
+# userspace wifi access points
+type hostapd, domain;
+type hostapd_exec, exec_type, file_type;
+
+net_domain(hostapd)
+
+allow hostapd self:capability { net_admin net_raw setuid setgid };
+allow hostapd self:netlink_socket create_socket_perms;
+allow hostapd self:packet_socket create_socket_perms;
+allow hostapd self:netlink_route_socket nlmsg_write;
+
+allow hostapd wifi_data_file:file rw_file_perms;
+allow hostapd wifi_data_file:dir create_dir_perms;
+type_transition hostapd wifi_data_file:dir wpa_socket "sockets";
+type_transition hostapd wifi_data_file:dir wpa_socket "hostapd";
+allow hostapd wpa_socket:dir create_dir_perms;
+allow hostapd wpa_socket:sock_file create_file_perms;
+allow hostapd netd:fd use;
+allow hostapd netd:udp_socket { read write };
+allow hostapd netd:fifo_file { read write };
+# TODO: Investigate whether these inherited sockets should be closed on exec.
+allow hostapd netd:netlink_kobject_uevent_socket { read write };
+allow hostapd netd:netlink_nflog_socket { read write };
+allow hostapd netd:netlink_route_socket { read write };
+allow hostapd netd:unix_stream_socket { read write };
+allow hostapd netd:unix_dgram_socket { read write sendto};
+
+#============= hostapd ==============
+allow hostapd persist_file:dir search;
+allow hostapd persist_file:file { read open };
+allow hostapd wifi_data_file:sock_file { create setattr unlink write };
+allow hostapd wpa_socket:sock_file { create setattr unlink write };

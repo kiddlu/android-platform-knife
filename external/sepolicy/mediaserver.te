@@ -1,0 +1,88 @@
+# mediaserver - multimedia daemon
+type mediaserver, domain;
+type mediaserver_exec, exec_type, file_type;
+
+typeattribute mediaserver mlstrustedsubject;
+
+net_domain(mediaserver)
+init_daemon_domain(mediaserver)
+unix_socket_connect(mediaserver, property, init)
+
+r_dir_file(mediaserver, sdcard_type)
+
+binder_use(mediaserver)
+binder_call(mediaserver, binderservicedomain)
+binder_call(mediaserver, appdomain)
+binder_service(mediaserver)
+
+allow mediaserver self:process execmem;
+allow mediaserver kernel:system module_request;
+allow mediaserver media_data_file:dir create_dir_perms;
+allow mediaserver media_data_file:file create_file_perms;
+allow mediaserver app_data_file:dir search;
+allow mediaserver app_data_file:file rw_file_perms;
+allow mediaserver sdcard_type:file write;
+allow mediaserver gpu_device:chr_file rw_file_perms;
+allow mediaserver video_device:dir r_dir_perms;
+allow mediaserver video_device:chr_file rw_file_perms;
+allow mediaserver audio_device:dir r_dir_perms;
+allow mediaserver tee_device:chr_file rw_file_perms;
+allow mediaserver audio_prop:property_service set;
+
+# Access audio devices at all.
+allow mediaserver audio_device:chr_file rw_file_perms;
+
+# XXX Label with a specific type?
+allow mediaserver sysfs:file rw_file_perms;
+
+# Read resources from open apk files passed over Binder.
+allow mediaserver apk_data_file:file { read getattr };
+allow mediaserver asec_apk_file:file { read getattr };
+
+# Read /data/data/com.android.providers.telephony files passed over Binder.
+allow mediaserver radio_data_file:file { read getattr };
+
+# Use pipes passed over Binder from app domains.
+allow mediaserver appdomain:fifo_file { getattr read write };
+
+# Access camera device.
+allow mediaserver camera_device:chr_file rw_file_perms;
+allow mediaserver rpmsg_device:chr_file rw_file_perms;
+
+# Inter System processes communicate over named pipe (FIFO)
+allow mediaserver system_server:fifo_file r_file_perms;
+
+# Camera data
+r_dir_file(mediaserver, camera_data_file)
+r_dir_file(mediaserver, media_rw_data_file)
+
+# Grant access to audio files to mediaserver
+allow mediaserver audio_data_file:dir ra_dir_perms;
+allow mediaserver audio_data_file:file create_file_perms;
+
+# Read/[write] to /proc/net/xt_qtaguid/ctrl and /dev/xt_qtaguid
+allow mediaserver qtaguid_proc:file rw_file_perms;
+allow mediaserver qtaguid_device:chr_file r_file_perms;
+
+# Allow abstract socket connection
+allow mediaserver rild:unix_stream_socket { connectto read write setopt };
+
+# Needed on some devices for playing DRM protected content,
+# but seems expected and appropriate for all devices.
+unix_socket_connect(mediaserver, drmserver, drmserver)
+
+# Needed on some devices for playing audio on paired BT device,
+# but seems appropriate for all devices.
+unix_socket_connect(mediaserver, bluetooth, bluetooth)
+
+# Connect to tee service.
+allow mediaserver tee:unix_stream_socket connectto;
+
+allow mediaserver mediaserver_service:service_manager add;
+
+# /oem access
+allow mediaserver oemfs:dir search;
+allow mediaserver oemfs:file r_file_perms;
+
+# i2c-5 access
+allow mediaserver i2c_device:chr_file rw_file_perms;

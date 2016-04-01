@@ -1,0 +1,23 @@
+type sdcardd, domain;
+type sdcardd_exec, exec_type, file_type;
+
+init_daemon_domain(sdcardd)
+
+allow sdcardd cgroup:dir create_dir_perms;
+allow sdcardd fuse_device:chr_file rw_file_perms;
+allow sdcardd rootfs:dir mounton;
+allow sdcardd sdcard_type:filesystem { mount unmount };
+allow sdcardd self:capability { setuid setgid dac_override sys_admin sys_resource };
+
+allow sdcardd sdcard_type:dir create_dir_perms;
+allow sdcardd sdcard_type:file create_file_perms;
+
+type_transition sdcardd system_data_file:{ dir file } media_rw_data_file;
+allow sdcardd media_rw_data_file:dir create_dir_perms;
+allow sdcardd media_rw_data_file:file create_file_perms;
+
+# Read /data/system/packages.list.
+allow sdcardd system_data_file:file r_file_perms;
+
+# Read /data/.layout_version
+allow sdcardd install_data_file:file r_file_perms;

@@ -1,0 +1,9 @@
+# watchdogd seclabel is specified in init.<board>.rc
+type watchdogd, domain;
+allow watchdogd self:capability mknod;
+allow watchdogd device:dir { add_name write remove_name };
+allow watchdogd watchdog_device:chr_file rw_file_perms;
+# because of /dev/__kmsg__ and /dev/__null__
+write_klog(watchdogd)
+type_transition watchdogd device:chr_file null_device "__null__";
+allow watchdogd null_device:chr_file { create unlink };

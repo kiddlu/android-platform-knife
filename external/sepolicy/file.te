@@ -1,0 +1,177 @@
+# Filesystem types
+type labeledfs, fs_type;
+type pipefs, fs_type;
+type sockfs, fs_type;
+type rootfs, fs_type;
+type proc, fs_type;
+# Security-sensitive proc nodes that should not be writable to most.
+type proc_security, fs_type;
+# proc, sysfs, or other nodes that permit configuration of kernel usermodehelpers.
+type usermodehelper, fs_type, sysfs_type;
+type qtaguid_proc, fs_type, mlstrustedobject;
+type proc_bluetooth_writable, fs_type;
+type proc_cpuinfo, fs_type;
+type proc_net, fs_type;
+type proc_sysrq, fs_type;
+type selinuxfs, fs_type;
+type cgroup, fs_type, mlstrustedobject;
+type sysfs, fs_type, sysfs_type, mlstrustedobject;
+type sysfs_writable, fs_type, sysfs_type, mlstrustedobject;
+type sysfs_bluetooth_writable, fs_type, sysfs_type, mlstrustedobject;
+type sysfs_nfc_power_writable, fs_type, sysfs_type, mlstrustedobject;
+type sysfs_wake_lock, fs_type, sysfs_type;
+# /sys/devices/system/cpu
+type sysfs_devices_system_cpu, fs_type, sysfs_type;
+# /sys/module/lowmemorykiller
+type sysfs_lowmemorykiller, fs_type, sysfs_type;
+type inotify, fs_type, mlstrustedobject;
+type devpts, fs_type, mlstrustedobject;
+type tmpfs, fs_type;
+type shm, fs_type;
+type mqueue, fs_type;
+type fuse, sdcard_type, fs_type, mlstrustedobject;
+type vfat, sdcard_type, fs_type, mlstrustedobject;
+typealias fuse alias sdcard_internal;
+typealias vfat alias sdcard_external;
+type debugfs, fs_type, mlstrustedobject;
+type pstorefs, fs_type;
+type functionfs, fs_type;
+type oemfs, fs_type, contextmount_type;
+type usbfs, fs_type;
+
+# File types
+type unlabeled, file_type;
+# Default type for anything under /system.
+type system_file, file_type;
+# /cores for coredumps on userdebug / eng builds
+type coredump_file, file_type;
+# Default type for anything under /data.
+type system_data_file, file_type, data_file_type;
+# /data/.layout_version or other installd-created files that
+# are created in a system_data_file directory.
+type install_data_file, file_type, data_file_type;
+# /data/drm - DRM plugin data
+type drm_data_file, file_type, data_file_type;
+# /data/adb - adb debugging files
+type adb_data_file, file_type, data_file_type;
+# /data/anr - ANR traces
+type anr_data_file, file_type, data_file_type, mlstrustedobject;
+# /data/tombstones - core dumps
+type tombstone_data_file, file_type, data_file_type;
+# /data/app - user-installed apps
+type apk_data_file, file_type, data_file_type;
+type apk_tmp_file, file_type, data_file_type, mlstrustedobject;
+# /data/app-private - forward-locked apps
+type apk_private_data_file, file_type, data_file_type;
+type apk_private_tmp_file, file_type, data_file_type, mlstrustedobject;
+# /data/dalvik-cache
+type dalvikcache_data_file, file_type, data_file_type;
+# /data/dalvik-cache/profiles
+type dalvikcache_profiles_data_file, file_type, data_file_type;
+# /data/resource-cache
+type resourcecache_data_file, file_type, data_file_type;
+# /data/local - writable by shell
+type shell_data_file, file_type, data_file_type;
+# /data/gps
+type gps_data_file, file_type, data_file_type;
+# /data/property
+type property_data_file, file_type, data_file_type;
+
+# /data/misc subdirectories
+type adb_keys_file, file_type, data_file_type;
+type audio_data_file, file_type, data_file_type;
+type bluetooth_data_file, file_type, data_file_type;
+type camera_data_file, file_type, data_file_type;
+type keychain_data_file, file_type, data_file_type;
+type keystore_data_file, file_type, data_file_type;
+type media_data_file, file_type, data_file_type;
+type media_rw_data_file, file_type, data_file_type;
+type misc_user_data_file, file_type, data_file_type;
+type net_data_file, file_type, data_file_type;
+type nfc_data_file, file_type, data_file_type;
+type radio_data_file, file_type, data_file_type;
+type shared_relro_file, file_type, data_file_type;
+type systemkeys_data_file, file_type, data_file_type;
+type vpn_data_file, file_type, data_file_type;
+type wifi_data_file, file_type, data_file_type;
+type zoneinfo_data_file, file_type, data_file_type;
+
+# Compatibility with type names used in vanilla Android 4.3 and 4.4.
+typealias audio_data_file alias audio_firmware_file;
+# /data/data subdirectories - app sandboxes
+type app_data_file, file_type, data_file_type;
+# /data/data subdirectory for system UID apps.
+type system_app_data_file, file_type, data_file_type;
+# Compatibility with type name used in Android 4.3 and 4.4.
+typealias app_data_file alias platform_app_data_file;
+typealias app_data_file alias download_file;
+# Default type for anything under /cache
+type cache_file, file_type, mlstrustedobject;
+# Type for /cache/.*\.{data|restore} and default
+# type for anything under /cache/backup
+type cache_backup_file, file_type, mlstrustedobject;
+# Default type for anything under /efs
+type efs_file, file_type;
+# Type for wallpaper file.
+type wallpaper_file, file_type, mlstrustedobject;
+# /mnt/asec
+type asec_apk_file, file_type, data_file_type;
+# Elements of asec files (/mnt/asec) that are world readable
+type asec_public_file, file_type, data_file_type;
+# /data/app-asec
+type asec_image_file, file_type, data_file_type;
+# /data/backup and /data/secure/backup
+type backup_data_file, file_type, data_file_type, mlstrustedobject;
+# For /data/security
+type security_file, file_type;
+# All devices have bluetooth efs files. But they
+# vary per device, so this type is used in per
+# device policy
+type bluetooth_efs_file, file_type;
+
+# Socket types
+type adbd_socket, file_type;
+type bluetooth_socket, file_type;
+type dnsproxyd_socket, file_type, mlstrustedobject;
+type dumpstate_socket, file_type;
+type fwmarkd_socket, file_type, mlstrustedobject;
+type gps_socket, file_type;
+type installd_socket, file_type;
+type lmkd_socket, file_type;
+type logd_debug, file_type;
+type logd_socket, file_type;
+type logdr_socket, file_type;
+type logdw_socket, file_type;
+type mdns_socket, file_type;
+type mdnsd_socket, file_type;
+type mtpd_socket, file_type;
+type netd_socket, file_type;
+type property_socket, file_type;
+type racoon_socket, file_type;
+type rild_socket, file_type;
+type rild_debug_socket, file_type;
+type system_wpa_socket, file_type;
+type system_ndebug_socket, file_type;
+type vold_socket, file_type;
+type wpa_socket, file_type;
+type zygote_socket, file_type;
+
+# UART (for GPS) control proc file
+type gps_control, file_type;
+
+# Allow files to be created in their appropriate filesystems.
+allow fs_type self:filesystem associate;
+allow sysfs_type sysfs:filesystem associate;
+allow file_type labeledfs:filesystem associate;
+allow file_type tmpfs:filesystem associate;
+allow file_type rootfs:filesystem associate;
+allow dev_type tmpfs:filesystem associate;
+
+# It's a bug to assign the file_type attribute and fs_type attribute
+# to any type. Do not allow it.
+#
+# For example, the following is a bug:
+#   type apk_data_file, file_type, data_file_type, fs_type;
+# Should be:
+#   type apk_data_file, file_type, data_file_type;
+neverallow fs_type file_type:filesystem associate;

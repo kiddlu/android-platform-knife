@@ -1,0 +1,29 @@
+###
+### Apps signed with the platform key.
+###
+
+type platform_app, domain;
+app_domain(platform_app)
+# Access the network.
+net_domain(platform_app)
+# Access bluetooth.
+bluetooth_domain(platform_app)
+# Read from /data/local/tmp or /data/data/com.android.shell.
+allow platform_app shell_data_file:dir search;
+allow platform_app shell_data_file:file { open getattr read };
+# Populate /data/app/vmdl*.tmp, /data/app-private/vmdl*.tmp files
+# created by system server.
+allow platform_app { apk_tmp_file apk_private_tmp_file }:dir rw_dir_perms;
+allow platform_app { apk_tmp_file apk_private_tmp_file }:file rw_file_perms;
+allow platform_app apk_private_data_file:dir search;
+# ASEC
+allow platform_app asec_apk_file:dir create_dir_perms;
+allow platform_app asec_apk_file:file create_file_perms;
+
+# Access to /data/media.
+allow platform_app media_rw_data_file:dir create_dir_perms;
+allow platform_app media_rw_data_file:file create_file_perms;
+
+# Write to /cache.
+allow platform_app cache_file:dir create_dir_perms;
+allow platform_app cache_file:file create_file_perms;

@@ -1,0 +1,86 @@
+#
+# Apps that run with the system UID, e.g. com.android.system.ui,
+# com.android.settings.  These are not as privileged as the system
+# server.
+#
+type system_app, domain;
+app_domain(system_app)
+net_domain(system_app)
+binder_service(system_app)
+
+# Read and write /data/data subdirectory.
+allow system_app system_app_data_file:dir create_dir_perms;
+allow system_app system_app_data_file:file create_file_perms;
+
+# Read /data/misc/keychain subdirectory.
+allow system_app keychain_data_file:dir r_dir_perms;
+allow system_app keychain_data_file:file r_file_perms;
+
+# Read and write to other system-owned /data directories, such as
+# /data/system/cache and /data/misc/user.
+allow system_app system_data_file:dir create_dir_perms;
+allow system_app system_data_file:file create_file_perms;
+allow system_app misc_user_data_file:dir create_dir_perms;
+allow system_app misc_user_data_file:file create_file_perms;
+# Audit writes to these directories and files so we can identify
+# and possibly move these directories into their own type in the future.
+auditallow system_app system_data_file:dir { create setattr add_name remove_name rmdir rename };
+auditallow system_app system_data_file:file { create setattr append write link unlink rename };
+
+# Read wallpaper file.
+allow system_app wallpaper_file:file r_file_perms;
+
+# Write to properties
+unix_socket_connect(system_app, property, init)
+allow system_app debug_prop:property_service set;
+allow system_app net_radio_prop:property_service set;
+allow system_app system_radio_prop:property_service set;
+auditallow system_app net_radio_prop:property_service set;
+auditallow system_app system_radio_prop:property_service set;
+allow system_app system_prop:property_service set;
+allow system_app ctl_bugreport_prop:property_service set;
+allow system_app logd_prop:property_service set;
+allow system_app default_prop:property_service set;
+
+# Create /data/anr/traces.txt.
+allow system_app anr_data_file:dir ra_dir_perms;
+allow system_app anr_data_file:file create_file_perms;
+
+# Settings need to access app name and icon from asec
+allow system_app asec_apk_file:file r_file_perms;
+
+#============= system_app ==============
+allow system_app graphics_device:dir search;
+allow system_app graphics_device:chr_file read;
+allow system_app graphics_device:chr_file write;
+allow system_app graphics_device:chr_file open;
+allow system_app graphics_device:chr_file ioctl;
+
+allow system_app system_app_service:service_manager add;
+
+#============= system_app ==============
+allow system_app system_app_data_file:file execute;
+
+#============= system_app ==============
+allow system_app dalvikcache_data_file:file write;
+
+allow system_app keystore:keystore_key {
+	test
+	get
+	insert
+	delete
+	exist
+	saw
+	reset
+	password
+	lock
+	unlock
+	zero
+	sign
+	verify
+	grant
+	duplicate
+	clear_uid
+};
+
+control_logd(system_app)

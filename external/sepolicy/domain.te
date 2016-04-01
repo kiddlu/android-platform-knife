@@ -1,0 +1,316 @@
+# Rules for all domains.
+
+# Allow reaping by init.
+allow domain init:process sigchld;
+
+# Read access to properties mapping.
+allow domain kernel:fd use;
+allow domain tmpfs:file { read getattr };
+
+# Search /storage/emulated tmpfs mount.
+allow domain tmpfs:dir r_dir_perms;
+
+# Intra-domain accesses.
+allow domain self:process {
+    fork
+    sigchld
+    sigkill
+    sigstop
+    signull
+    signal
+    getsched
+    setsched
+    getsession
+    getpgid
+    setpgid
+    getcap
+    setcap
+    getattr
+    setrlimit
+};
+allow domain self:fd use;
+allow domain self:dir r_dir_perms;
+allow domain self:lnk_file r_file_perms;
+allow domain self:{ fifo_file file } rw_file_perms;
+allow domain self:unix_dgram_socket { create_socket_perms sendto };
+allow domain self:unix_stream_socket { create_stream_socket_perms connectto };
+
+# Inherit or receive open files from others.
+allow domain init:fd use;
+allow domain system_server:fd use;
+
+# Connect to adbd and use a socket transferred from it.
+# This is used for e.g. adb backup/restore.
+allow domain adbd:unix_stream_socket connectto;
+allow domain adbd:fd use;
+allow domain adbd:unix_stream_socket { getattr getopt read write shutdown };
+
+userdebug_or_eng(`
+  # Same as adbd rules above, except allow su to do the same thing
+  allow domain su:unix_stream_socket connectto;
+  allow domain su:fd use;
+  allow domain su:unix_stream_socket { getattr getopt read write shutdown };
+
+  binder_call(domain, su)
+
+  # Running something like "pm dump com.android.bluetooth" requires
+  # fifo writes
+  allow domain su:fifo_file { write getattr };
+
+  # allow "gdbserver --attach" to work for su.
+  allow domain su:process sigchld;
+
+  # Allow writing coredumps to /cores/*
+  allow domain coredump_file:file create_file_perms;
+  allow domain coredump_file:dir ra_dir_perms;
+')
+
+###
+### Talk to debuggerd.
+###
+allow domain debuggerd:process sigchld;
+allow domain debuggerd:unix_stream_socket connectto;
+
+# Root fs.
+allow domain rootfs:dir r_dir_perms;
+allow domain rootfs:file r_file_perms;
+allow domain rootfs:lnk_file r_file_perms;
+
+# Device accesses.
+allow domain device:dir search;
+allow domain dev_type:lnk_file r_file_perms;
+allow domain devpts:dir search;
+allow domain device:file read;
+allow domain socket_device:dir r_dir_perms;
+allow domain owntty_device:chr_file rw_file_perms;
+allow domain null_device:chr_file rw_file_perms;
+allow domain zero_device:chr_file rw_file_perms;
+allow domain ashmem_device:chr_file rw_file_perms;
+allow domain binder_device:chr_file rw_file_perms;
+allow domain ptmx_device:chr_file rw_file_perms;
+allow domain log_device:dir search;
+allow domain log_device:chr_file rw_file_perms;
+allow domain alarm_device:chr_file r_file_perms;
+allow domain urandom_device:chr_file rw_file_perms;
+allow domain random_device:chr_file rw_file_perms;
+allow domain properties_device:file r_file_perms;
+
+# logd access
+write_logd(domain)
+
+# Filesystem accesses.
+allow domain fs_type:filesystem getattr;
+allow domain fs_type:dir getattr;
+
+# System file accesses.
+allow domain system_file:dir r_dir_perms;
+allow domain system_file:file r_file_perms;
+allow domain system_file:file execute;
+allow domain system_file:lnk_file r_file_perms;
+
+# Read files already opened under /data.
+allow domain system_data_file:dir { search getattr };
+allow domain system_data_file:file { getattr read };
+allow domain system_data_file:lnk_file r_file_perms;
+
+# Read apk files under /data/app.
+allow domain apk_data_file:dir { getattr search };
+allow domain apk_data_file:file r_file_perms;
+allow domain apk_data_file:lnk_file r_file_perms;
+
+# Read /data/dalvik-cache.
+allow domain dalvikcache_data_file:dir { search getattr };
+allow domain dalvikcache_data_file:file r_file_perms;
+
+# Read already opened /cache files.
+allow domain cache_file:dir r_dir_perms;
+allow domain cache_file:file { getattr read };
+allow domain cache_file:lnk_file r_file_perms;
+
+# Read timezone related information
+r_dir_file(domain, zoneinfo_data_file)
+
+# For /acct/uid/*/tasks.
+allow domain cgroup:dir { search write };
+allow domain cgroup:file w_file_perms;
+
+#Allow access to ion memory allocation device
+allow domain ion_device:chr_file rw_file_perms;
+
+# Read access to pseudo filesystems.
+r_dir_file(domain, proc)
+r_dir_file(domain, sysfs)
+r_dir_file(domain, sysfs_devices_system_cpu)
+r_dir_file(domain, inotify)
+r_dir_file(domain, cgroup)
+r_dir_file(domain, proc_net)
+allow domain proc_cpuinfo:file r_file_perms;
+
+# debugfs access
+allow domain debugfs:dir r_dir_perms;
+allow domain debugfs:file w_file_perms;
+
+# Get SELinux enforcing status.
+allow domain selinuxfs:dir r_dir_perms;
+allow domain selinuxfs:file r_file_perms;
+
+# /data/security files
+allow domain security_file:dir { search getattr };
+allow domain security_file:file getattr;
+allow domain security_file:lnk_file r_file_perms;
+
+# World readable asec image contents
+allow domain asec_public_file:file r_file_perms;
+allow domain { asec_public_file asec_apk_file }:dir r_dir_perms;
+
+allow domain servicemanager:service_manager list;
+allow domain service_manager_type:service_manager find;
+
+###
+### neverallow rules
+###
+
+# Do not allow any confined domain to create new unlabeled files.
+neverallow { domain -unconfineddomain -recovery } unlabeled:dir_file_class_set create;
+
+# Limit ability to ptrace or read sensitive /proc/pid files of processes
+# with other UIDs to these whitelisted domains.
+neverallow { domain -debuggerd -vold -dumpstate -system_server } self:capability sys_ptrace;
+
+# Limit device node creation to these whitelisted domains.
+neverallow { domain -kernel -init -recovery -ueventd -watchdogd -healthd -vold -uncrypt } self:capability mknod;
+
+# Limit raw I/O to these whitelisted domains.
+neverallow { domain -kernel -init -recovery -ueventd -watchdogd -healthd -vold -uncrypt -tee } self:capability sys_rawio;
+
+# No process can map low memory (< CONFIG_LSM_MMAP_MIN_ADDR).
+neverallow domain self:memprotect mmap_zero;
+
+# No domain needs mac_override as it is unused by SELinux.
+neverallow domain self:capability2 mac_override;
+
+# Only recovery needs mac_admin to set contexts not defined in current policy.
+neverallow { domain -recovery } self:capability2 mac_admin;
+
+# Only init should be able to load SELinux policies.
+# The first load technically occurs while still in the kernel domain,
+# but this does not trigger a denial since there is no policy yet.
+# Policy reload requires allowing this to the init domain.
+neverallow { domain -init } kernel:security load_policy;
+
+# Only init and the system_server can set selinux.reload_policy 1
+# to trigger a policy reload.
+neverallow { domain -init -system_server } security_prop:property_service set;
+
+# Only init and system_server can write to /data/security, where runtime
+# policy updates live.
+# Only init can relabel /data/security (for init.rc restorecon_recursive /data).
+neverallow { domain -init } security_file:{ dir file lnk_file } { relabelfrom relabelto };
+# Only init and system_server can create/setattr directories with this type.
+# init is for init.rc mkdir /data/security.
+# system_server is for creating subdirectories under /data/security.
+neverallow { domain -init -system_server } security_file:dir { create setattr };
+# Only system_server can create subdirectories and files under /data/security.
+neverallow { domain -system_server } security_file:dir { rename write add_name remove_name rmdir };
+neverallow { domain -system_server } security_file:file { create setattr write append unlink link rename };
+neverallow { domain -system_server } security_file:lnk_file { create setattr unlink rename };
+
+# Only init prior to switching context should be able to set enforcing mode.
+# init starts in kernel domain and switches to init domain via setcon in
+# the init.rc, so the setenforce occurs while still in kernel. After
+# switching domains, there is never any need to setenforce again by init.
+neverallow domain kernel:security setenforce;
+neverallow { domain -kernel } kernel:security setcheckreqprot;
+
+# No booleans in AOSP policy, so no need to ever set them.
+neverallow domain kernel:security setbool;
+
+# Adjusting the AVC cache threshold.
+# Not presently allowed to anything in policy, but possibly something
+# that could be set from init.rc.
+neverallow { domain -init } kernel:security setsecparam;
+
+# Only init, ueventd and system_server should be able to access HW RNG
+neverallow { domain -init -system_server -ueventd -unconfineddomain } hw_random_device:chr_file *;
+
+# Ensure that all entrypoint executables are in exec_type.
+neverallow domain { file_type -exec_type }:file entrypoint;
+
+# Ensure that nothing in userspace can access /dev/mem or /dev/kmem
+neverallow { domain -kernel -ueventd -init } kmem_device:chr_file *;
+neverallow domain kmem_device:chr_file ~{ create relabelto unlink setattr };
+
+# Only init should be able to configure kernel usermodehelpers or
+# security-sensitive proc settings.
+neverallow { domain -init } usermodehelper:file { append write };
+neverallow { domain -init } proc_security:file { append write };
+
+# No domain should be allowed to ptrace init.
+neverallow domain init:process ptrace;
+
+# Init can't receive binder calls. If this neverallow rule is being
+# triggered, it's probably due to a service with no SELinux domain.
+neverallow domain init:binder call;
+
+# Don't allow raw read/write/open access to block_device
+# Rather force a relabel to a more specific type
+neverallow { domain -kernel -init -recovery -vold -uncrypt -install_recovery } block_device:blk_file { open read write };
+
+# Don't allow raw read/write/open access to generic devices.
+# Rather force a relabel to a more specific type.
+# ueventd is exempt from this, as its managing these devices.
+neverallow { domain -unconfineddomain -ueventd -recovery } device:chr_file { open read write };
+
+# Limit what domains can mount filesystems or change their mount flags.
+# sdcard_type / vfat is exempt as a larger set of domains need
+# this capability, including device-specific domains.
+neverallow { domain -kernel -init -recovery -vold -zygote } { fs_type -sdcard_type }:filesystem { mount remount relabelfrom relabelto };
+
+#
+# Assert that, to the extent possible, we're not loading executable content from
+# outside the rootfs or /system partition except for a few whitelisted domains.
+#
+neverallow {
+    domain
+    -appdomain
+    -dumpstate
+    -shell
+    userdebug_or_eng(`-su')
+    -system_server
+    -zygote
+} { file_type -system_file -exec_type }:file execute;
+neverallow {
+    domain
+    -appdomain # for oemfs
+    -recovery # for /tmp/update_binary in tmpfs
+} { fs_type -rootfs }:file execute;
+
+# Only the init property service should write to /data/property.
+neverallow { domain -init } property_data_file:dir { create setattr relabelfrom rename write add_name remove_name rmdir };
+neverallow { domain -init } property_data_file:file { create setattr relabelfrom write append unlink link rename };
+
+# Only recovery should be doing writes to /system
+neverallow { domain -recovery } { system_file exec_type }:dir_file_class_set
+    { create write setattr relabelfrom relabelto append unlink link rename };
+
+# Nothing should be writing to files in the rootfs.
+neverallow { domain -recovery } rootfs:file { create write setattr relabelto append unlink link rename };
+
+# Restrict context mounts to specific types marked with
+# the contextmount_type attribute.
+neverallow domain {fs_type -contextmount_type -sdcard_type}:filesystem relabelto;
+
+# Ensure that context mount types are not writable, to ensure that
+# the write to /system restriction above is not bypassed via context=
+# mount to another type.
+neverallow { domain -recovery } contextmount_type:dir_file_class_set
+    { create write setattr relabelfrom relabelto append unlink link rename };
+
+# Do not allow service_manager add for default_android_service.
+# Instead domains should use a more specific type such as
+# system_app_service rather than the generic type.
+# New service_types are defined in service.te and new mappings
+# from service name to service_type are defined in service_contexts.
+neverallow domain default_android_service:service_manager add;
+
+neverallow { domain -init -recovery -system_server } frp_block_device:blk_file rw_file_perms;

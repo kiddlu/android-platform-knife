@@ -1,0 +1,32 @@
+# IKE key management daemon
+type racoon, domain;
+type racoon_exec, exec_type, file_type;
+
+init_daemon_domain(racoon)
+typeattribute racoon mlstrustedsubject;
+
+net_domain(racoon)
+
+binder_use(racoon)
+
+allow racoon tun_device:chr_file r_file_perms;
+allow racoon cgroup:dir { add_name create };
+allow racoon kernel:system module_request;
+
+allow racoon self:key_socket create_socket_perms;
+allow racoon self:tun_socket create_socket_perms;
+allow racoon self:capability { net_admin net_bind_service net_raw setuid };
+
+# XXX: should we give ip-up-vpn its own label (currently racoon domain)
+allow racoon system_file:file rx_file_perms;
+allow racoon vpn_data_file:file create_file_perms;
+allow racoon vpn_data_file:dir w_dir_perms;
+
+use_keystore(racoon)
+
+# Racoon (VPN) has a restricted set of permissions from the default.
+allow racoon keystore:keystore_key {
+	get
+	sign
+	verify
+};

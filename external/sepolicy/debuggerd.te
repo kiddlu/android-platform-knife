@@ -1,0 +1,35 @@
+# debugger interface
+type debuggerd, domain;
+type debuggerd_exec, exec_type, file_type;
+
+init_daemon_domain(debuggerd)
+typeattribute debuggerd mlstrustedsubject;
+allow debuggerd self:capability { dac_override sys_ptrace chown kill fowner };
+allow debuggerd self:capability2 { syslog };
+allow debuggerd domain:dir r_dir_perms;
+allow debuggerd domain:file r_file_perms;
+allow debuggerd domain:lnk_file read;
+allow debuggerd { domain -init -ueventd -watchdogd -healthd -adbd -keystore }:process ptrace;
+security_access_policy(debuggerd)
+allow debuggerd system_data_file:dir create_dir_perms;
+allow debuggerd system_data_file:dir relabelfrom;
+allow debuggerd tombstone_data_file:dir relabelto;
+allow debuggerd tombstone_data_file:dir create_dir_perms;
+allow debuggerd tombstone_data_file:file create_file_perms;
+allow debuggerd shared_relro_file:dir r_dir_perms;
+allow debuggerd shared_relro_file:file r_file_perms;
+allow debuggerd domain:process { sigstop signal };
+allow debuggerd exec_type:file r_file_perms;
+# Access app library
+allow debuggerd system_data_file:file open;
+
+# Connect to system_server via /data/system/ndebugsocket.
+unix_socket_connect(debuggerd, system_ndebug, system_server)
+
+userdebug_or_eng(`
+  allow debuggerd input_device:dir r_dir_perms;
+  allow debuggerd input_device:chr_file rw_file_perms;
+')
+
+# logd access
+read_logd(debuggerd)

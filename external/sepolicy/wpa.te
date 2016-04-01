@@ -1,0 +1,39 @@
+# wpa - wpa supplicant or equivalent
+type wpa, domain;
+type wpa_exec, exec_type, file_type;
+
+init_daemon_domain(wpa)
+
+net_domain(wpa)
+
+allow wpa kernel:system module_request;
+allow wpa self:capability { setuid net_admin setgid net_raw };
+allow wpa cgroup:dir create_dir_perms;
+allow wpa self:netlink_route_socket nlmsg_write;
+allow wpa self:netlink_socket create_socket_perms;
+allow wpa self:packet_socket create_socket_perms;
+allow wpa wifi_data_file:dir create_dir_perms;
+allow wpa wifi_data_file:file create_file_perms;
+unix_socket_send(wpa, system_wpa, system_server)
+
+binder_use(wpa)
+
+# Create a socket for receiving info from wpa
+type_transition wpa wifi_data_file:dir wpa_socket "sockets";
+allow wpa wpa_socket:dir create_dir_perms;
+allow wpa wpa_socket:sock_file create_file_perms;
+
+use_keystore(wpa)
+
+# WPA (wifi) has a restricted set of permissions from the default.
+allow wpa keystore:keystore_key {
+	get
+	sign
+	verify
+};
+
+# Allow wpa_cli to work. wpa_cli creates a socket in
+# /data/misc/wifi/sockets which wpa supplicant communicates with.
+userdebug_or_eng(`
+  unix_socket_send(wpa, wpa, su)
+')

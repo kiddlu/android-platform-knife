@@ -1,0 +1,28 @@
+type dhcp, domain;
+type dhcp_exec, exec_type, file_type;
+type dhcp_data_file, file_type, data_file_type;
+
+init_daemon_domain(dhcp)
+net_domain(dhcp)
+
+allow dhcp cgroup:dir { create write add_name };
+allow dhcp self:capability { setgid setuid net_admin net_raw net_bind_service };
+allow dhcp self:packet_socket create_socket_perms;
+allow dhcp self:netlink_route_socket nlmsg_write;
+allow dhcp shell_exec:file rx_file_perms;
+allow dhcp system_file:file rx_file_perms;
+# For /proc/sys/net/ipv4/conf/*/promote_secondaries
+allow dhcp proc_net:file write;
+allow dhcp dhcp_prop:property_service set;
+allow dhcp pan_result_prop:property_service set;
+unix_socket_connect(dhcp, property, init)
+
+type_transition dhcp system_data_file:{ dir file } dhcp_data_file;
+allow dhcp dhcp_data_file:dir create_dir_perms;
+allow dhcp dhcp_data_file:file create_file_perms;
+
+# PAN connections
+allow dhcp netd:fd use;
+allow dhcp netd:fifo_file rw_file_perms;
+allow dhcp netd:{ dgram_socket_class_set unix_stream_socket } { read write };
+allow dhcp netd:{ netlink_kobject_uevent_socket netlink_route_socket netlink_nflog_socket } { read write };
