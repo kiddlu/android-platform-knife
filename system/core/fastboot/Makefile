@@ -18,6 +18,7 @@ CFLAGS += -I../include -I../mkbootimg -I../libsparse/include -I../../extras/ext4
 
 ifeq ($(COMPILER), linux)
 SRC += usb_linux.c util_linux.c
+DEPEND_STATIC_LIB += ../../../output/lib/libselinux.a ../../../output/lib/libpcre.a
 endif
 ifeq ($(COMPILER), mingw)
 SRC += usb_windows.c util_windows.c

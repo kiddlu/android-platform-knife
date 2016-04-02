@@ -59,11 +59,11 @@
 #define S_ISVTX 0001000
 
 #else
-#ifdef USE_SELINUX
+
 #include <selinux/selinux.h>
 #include <selinux/label.h>
 #include <selinux/android.h>
-#endif
+
 #define O_BINARY 0
 
 #endif
@@ -99,7 +99,6 @@ static u32 build_default_directory_structure(const char *dir_path,
 		dentries.uid, dentries.gid, dentries.mtime);
 
 #ifndef USE_MINGW
-#ifdef USE_SELINUX
 	if (sehnd) {
 		char *path = NULL;
 		char *secontext = NULL;
@@ -113,7 +112,6 @@ static u32 build_default_directory_structure(const char *dir_path,
 		}
 		free(path);
 	}
-#endif
 #endif
 
 	return root_inode;
@@ -205,7 +203,6 @@ static u32 build_directory_structure(const char *full_path, const char *dir_path
 #endif
 		}
 #ifndef USE_MINGW
-#ifdef USE_SELINUX
 		if (sehnd) {
 			if (selabel_lookup(sehnd, &dentries[i].secon, dentries[i].path, stat.st_mode) < 0) {
 				error("cannot lookup security context for %s", dentries[i].path);
@@ -214,7 +211,6 @@ static u32 build_directory_structure(const char *full_path, const char *dir_path
 			if (dentries[i].secon && verbose)
 				printf("Labeling %s as %s\n", dentries[i].path, dentries[i].secon);
 		}
-#endif
 #endif
 
 		if (S_ISREG(stat.st_mode)) {
@@ -257,12 +253,10 @@ static u32 build_directory_structure(const char *full_path, const char *dir_path
 		dentries[0].file_type = EXT4_FT_DIR;
 		dentries[0].uid = 0;
 		dentries[0].gid = 0;
-#ifdef USE_SELINUX
 		if (sehnd) {
 			if (selabel_lookup(sehnd, &dentries[0].secon, dentries[0].path, dentries[0].mode) < 0)
 				error("cannot lookup security context for %s", dentries[0].path);
 		}
-#endif
 		entries++;
 		dirs++;
 	}
@@ -608,7 +602,6 @@ int make_ext4fs_internal(int fd, const char *_directory,
 	inode_set_permissions(root_inode_num, root_mode, 0, 0, 0);
 
 #ifndef USE_MINGW
-#ifdef USE_SELINUX
 	if (sehnd) {
 		char *secontext = NULL;
 
@@ -623,7 +616,6 @@ int make_ext4fs_internal(int fd, const char *_directory,
 		}
 		freecon(secontext);
 	}
-#endif
 #endif
 
 	ext4_update_free();

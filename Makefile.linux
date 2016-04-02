@@ -15,6 +15,9 @@ all:
 	cd system/core/cpio/ && make -j4 && make install && make clean
 	cd system/core/libzipfile/ && make -j4 && make install && make clean
 	cd system/extras/ext4_utils/ && make -j4 && make install && make clean
+	cd system/core/liblog/ && make -j4 && make install && make clean
+	cd system/core/libcutils/ && make -j4 && make install && make clean
+	cd system/core/fastboot/ && make -j4 && make install && make clean
 	#cd prebuild/ && make install
 
 .PHONY:clean

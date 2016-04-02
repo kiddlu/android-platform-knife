@@ -1,6 +1,11 @@
 CC = $(CROSS_COMPILE)gcc
 AR = $(CROSS_COMPILE)ar
 
+COMPILER = $(shell $(CC) -dM -E -  < /dev/null | grep _WIN32 > /dev/null && echo "mingw"  || echo "none")
+ifeq ($(COMPILER), none)
+COMPILER = linux
+endif
+
 TARGET=liblog
 TARGET_STATIC_LIB = $(TARGET).a
 
@@ -9,6 +14,10 @@ OBJ = $(SRC:.c=.o)
 
 CFLAGS = -Werror -DFAKE_LOG_DEVICE=1
 CFLAGS += -I../include
+
+ifeq ($(COMPILER), linux)
+CFLAGS += -DHAVE_SYS_UIO_H
+endif
 
 $(TARGET_STATIC_LIB):$(OBJ) $(DEPEND_STATIC_LIB);$(AR) -r $(TARGET_STATIC_LIB) $(OBJ)
 $(filter %.o,$(OBJ)):%.o:%.c;$(CC) $(CFLAGS) -c -o $@ $<

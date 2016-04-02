@@ -30,11 +30,9 @@
 #endif
 
 #ifndef USE_MINGW
-#ifdef USE_SELINUX
 #include <selinux/selinux.h>
 #include <selinux/label.h>
 #include <selinux/android.h>
-#endif
 #else
 struct selabel_handle;
 #endif
@@ -79,9 +77,7 @@ int main(int argc, char **argv)
 	struct selabel_handle *sehnd = NULL;
 	FILE* block_list_file = NULL;
 #ifndef USE_MINGW
-#ifdef USE_SELINUX
 	struct selinux_opt seopts[] = { { SELABEL_OPT_PATH, "" } };
-#endif
 #endif
 
 	while ((opt = getopt(argc, argv, "l:j:b:g:i:I:L:a:S:T:C:B:fwzJsctv")) != -1) {
@@ -139,14 +135,12 @@ int main(int argc, char **argv)
 			break;
 		case 'S':
 #ifndef USE_MINGW
-#ifdef USE_SELINUX
 			seopts[0].value = optarg;
 			sehnd = selabel_open(SELABEL_CTX_FILE, seopts, 1);
 			if (!sehnd) {
 				perror(optarg);
 				exit(EXIT_FAILURE);
 			}
-#endif
 #endif
 			break;
 		case 'v':
