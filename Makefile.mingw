@@ -9,9 +9,12 @@ all:
 	cd system/core/libmincrypt/ && make && make install && make clean
 	cd system/core/libsparse/ && make && make install && make clean
 	cd system/core/mkbootimg/ && make && make install && make clean
-	cd system/core/cpio/ && make && make install && make clean
+	#cd system/core/cpio/ && make && make install && make clean
 	cd system/core/libzipfile/ && make && make install && make clean
 	cd system/extras/ext4_utils/ && make && make install && make clean
+	cd system/core/liblog/ && make -j4 && make install && make clean
+	cd system/core/libcutils/ && make -j4 && make install && make clean
+	cd system/core/fastboot/ && make -j4 && make install && make clean
 	#cd prebuild/ && make install
 
 .PHONY:clean

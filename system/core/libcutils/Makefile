@@ -49,11 +49,9 @@ SRC +=  \
 
 CFLAGS += -DHAVE_PTHREADS
 endif
+
 ifeq ($(COMPILER), mingw)
-SRC += usb_windows.c util_windows.c
-CFLAGS += -I../../../development/host/windows/usb/api -DUSE_MINGW
-DEPEND_STATIC_LIB += ../../../prebuild/host/windows-x64/AdbWinApi.lib
-LDFLAGS += -lws2_32
+CFLAGS += -DUSE_MINGW -DHAVE_WIN32_THREADS
 endif
 
 $(TARGET_STATIC_LIB):$(OBJ) $(DEPEND_STATIC_LIB);$(AR) -r $(TARGET_STATIC_LIB) $(OBJ)
