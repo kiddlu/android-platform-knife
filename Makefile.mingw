@@ -1,3 +1,5 @@
+# Do not compile selinux
+# which need posix subsystem not compatible with mingw
 
 UNAME = $(shell uname -o)
 GCCVERSION = $(shell $(CROSS_COMPILE)gcc -v)

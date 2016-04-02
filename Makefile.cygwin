@@ -1,3 +1,5 @@
+# Do not compile fastboot/adb
+# which need usb subsystem not compatible with cygwin
 
 UNAME = $(shell uname -o)
 GCCVERSION = $(shell $(CROSS_COMPILE)gcc -v)

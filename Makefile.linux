@@ -1,3 +1,6 @@
+# Of course
+# Make all if possible
+
 UNAME = $(shell uname -o)
 GCCVERSION = $(shell $(CROSS_COMPILE)gcc -v)
 .PHONY:all
