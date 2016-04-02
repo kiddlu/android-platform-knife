@@ -1,0 +1,23 @@
+CC = $(CROSS_COMPILE)gcc
+
+TARGET=sepolicy-check
+TARGET_EXE=$(TARGET)
+
+SRC = tools/sepolicy-check.c
+OBJ = $(SRC:.c=.o)
+
+DEPEND_STATIC_LIB = ../../output/lib/libsepol.a
+
+CFLAGS = -Wall -Werror
+CFLAGS += -I../libsepol/include
+
+$(TARGET_EXE):$(OBJ) $(DEPEND_STATIC_LIB);$(CC) -o $@ $^
+$(filter %.o,$(OBJ)):%.o:%.c;$(CC) $(CFLAGS) -c -o $@ $<
+
+.PHONY:install
+install:
+	 mv $(TARGET_EXE) ../../output/bin/
+
+.PHONY:clean
+clean:
+	 rm -f $(OBJ) $(TARGET_EXE)
