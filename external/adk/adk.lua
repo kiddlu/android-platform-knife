@@ -4,6 +4,7 @@ local adk_parser = parser(
 --buildin
 	"ftyrst",
 	"pk",
+	"meminfo",
 	"smartisan-active",
 --trace
     "strace",
@@ -22,7 +23,7 @@ local adk_parser = parser(
 --coreutils
 	"ps",
 	"top",
-	"printenv"
+	"printenv",
 	"ifconfig",
 	"vmstat",
 	"lsof",

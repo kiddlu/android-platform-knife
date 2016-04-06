@@ -20,7 +20,8 @@ int main(int argc, char **argv)
     argv += optind;
 
 	if (argc < 1) {
-		printf("adk \"cmd\" to execute\n");
+		printf("Android Debug Kit\n");
+		printf("\nadk \"cmd\" to execute\n");
 		return -EINVAL;
 	} /* build-in cmd */
 	else if(!strcmp(*argv, "ftyrst")) {
@@ -35,6 +36,33 @@ int main(int argc, char **argv)
 		argc -= 1;
 		argv += 1;
 		goto construct;
+	} else if(!strcmp(*argv, "meminfo")) {
+		unsigned int sleep_time = 0;
+		unsigned int loop_time = 0;
+		if ( argc == 1 ) {
+			sleep_time = 0;
+		} else {
+			sleep_time = atoi(argv[1]);
+		}
+		do {
+			loop_time++;
+			sprintf(cmd, "adb shell echo ======loop times:%d sleep:%d======", loop_time, sleep_time);
+			system(cmd);
+
+			system("adb shell cat /proc/meminfo");
+			system("adb shell cat /proc/pagetypeinfo");
+			system("adb shell cat /proc/slabinfo");
+			system("adb shell cat /proc/zoneinfo");
+			system("adb shell cat /proc/vmallocinfo");
+			system("adb shell cat /proc/vmstat");
+			system("adb shell cat /proc/meminfo");
+			system("adb shell top -n 1");
+			system("adb shell free -m");
+
+			sprintf(cmd, "adb shell sleep %d", sleep_time);
+			system(cmd);
+		} while(sleep_time);
+		return 0;
 	} else if(!strcmp(*argv, "smartisan-active")) {
 		sprintf(cmd, "adb shell am start -n com.smartisanos.setupwizard/com.smartisanos.setupwizard.SetupWizardCompleteActivity");
 		goto execute;
