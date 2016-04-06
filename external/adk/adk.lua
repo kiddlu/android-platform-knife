@@ -16,28 +16,34 @@ local adk_parser = parser(
 --net
 	"tcpdump",
 	"netstat",
---system
-	"getevent",
+	"ip",
+	"iptables",
+	"ndc",
+--coreutils
+	"ps",
+	"top",
+	"printenv"
+	"ifconfig",
+	"vmstat",
 	"lsof",
+	"busybox",
+	"getevent",
+--log
+    "logcat",
+    "dmesg",
+--android
 	"getenforce",
 	"setenforce",
-	"getopt",
-	"setopt",
+	"getprop",
+	"setprop",
 	"start",
 	"stop",
 	"netcfg",
 	"svc",
 	"am",
+	"dumpsys",
+	"dumpstate",
 	"screencap",
---coreutils
-	"ps",
-	"top",
-	"ifconfig",
-	"vmstat",
-	"busybox",
---log
-    "logcat",
-    "dmesg",
 --reboot
     "reboot",
 	"reboot edl",
