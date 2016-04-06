@@ -6,7 +6,7 @@
 	make -f Makefile.$(your-platform) CROSS_COMPILE=$(if-you-need)
 	find what you build in ./output/bin/
 
-##### How to use
+#### How to use?
 	cp all ./output/bin/* to your PATH
 	
 	or you can use my prebuild
