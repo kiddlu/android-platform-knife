@@ -3,15 +3,16 @@
 #### How to build?
 
 	cd android-host-knife/
-	make CROSS_COMPILE=$(if-you-need)
-	source setenv.sh
+	make -f Makefile.$(your-platform) CROSS_COMPILE=$(if-you-need)
+	find what you build in ./output/bin/
 
-####Note:
-	Linux   work well
-	MacOS   not test
-	Cygwin  work well
-	MinGW   bug in mkbootfs(packramdisk.sh, symbol link issue)
-
-#####TODO
-	fix bug on MinGW if possible
+##### How to use
+	cp all ./output/bin/* to your PATH
 	
+	or you can use my prebuild
+	
+	on Linux:
+	source ./setenv.sh
+
+	on Windows:
+	.\setenv.bat
