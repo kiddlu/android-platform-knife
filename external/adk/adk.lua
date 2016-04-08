@@ -47,6 +47,7 @@ local adk_parser = parser(
 	"screencap",
 --reboot
     "reboot",
+	"reboot -p",
 	"reboot edl",
 	"reboot recovery",
 	"reboot bootloader"
