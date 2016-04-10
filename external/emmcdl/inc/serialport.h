@@ -22,7 +22,7 @@ when       who     what, where, why
 #pragma once
 
 #include <stdio.h>
-#include <Windows.h>
+#include "sysdeps.h"
 #include "crc.h"
 
 #define  ASYNC_HDLC_FLAG      0x7e

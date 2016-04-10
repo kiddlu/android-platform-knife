@@ -23,7 +23,7 @@ when       who     what, where, why
 #pragma once
 
 
-#include <windows.h>
+#include "sysdeps.h"
 #include <stdio.h>
 
 #define MAX_STRING_LEN   512

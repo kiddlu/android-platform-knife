@@ -30,8 +30,8 @@ when       who     what, where, why
 #include <winioctl.h>
 #include <string.h>
 #include <stdio.h>
-#include "tchar.h"
-#include "windows.h"
+#include "auto_tchar.h"
+#include "sysdeps.h"
 #include "sahara.h"
 
 // Only List COM port information for desktop version
@@ -184,9 +184,11 @@ int DiskWriter::InitDiskList(bool verbose)
   BOOL bValid = true;
   int i=0;
 #ifndef ARM
+#ifndef __MINGW32__
   HDEVINFO hDevInfo = SetupDiGetClassDevs(&GUID_DEVINTERFACE_COMPORT,NULL,NULL,DIGCF_DEVICEINTERFACE|DIGCF_PRESENT);
   DEVPROPTYPE ulPropertyType = DEVPROP_TYPE_STRING;
   DWORD dwSize;
+#endif
 #endif //ARM
 
   if( disks == NULL || volumes == NULL ) {
@@ -196,6 +198,7 @@ int DiskWriter::InitDiskList(bool verbose)
   wprintf(L"Finding all devices in emergency download mode...\n");
 
 #ifndef ARM
+#ifndef __MINGW32__
   if( hDevInfo != INVALID_HANDLE_VALUE ) {
     // Successfully got a list of ports
     for(int i=0; ;i++) {
@@ -231,6 +234,7 @@ int DiskWriter::InitDiskList(bool verbose)
     }
     SetupDiDestroyDeviceInfoList(hDevInfo);
   }  
+#endif
 #endif //ARM
 
   memset(volumes,0,sizeof(vol_entry_t)*MAX_VOLUMES);

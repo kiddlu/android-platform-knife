@@ -21,10 +21,13 @@ when       who     what, where, why
 =============================================================================*/
 
 #include "stdio.h"
-#include "tchar.h"
+#include "auto_tchar.h"
 #include "xmlparser.h"
 #include "winerror.h"
 #include <stdlib.h>
+
+#define max(a,b)    (((a) > (b)) ? (a) : (b))
+#define min(a,b)    (((a) < (b)) ? (a) : (b))
 
 XMLParser::XMLParser()
 {

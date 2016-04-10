@@ -1,5 +1,5 @@
 
-#include <Windows.h>
+#include "sysdeps.h"
 
 #define CRC_16_L_SEED         0xFFFF
 extern const unsigned short crc_16_l_table[];

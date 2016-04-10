@@ -21,7 +21,7 @@ when       who     what, where, why
 =============================================================================*/
 #pragma once
 #include "protocol.h"
-#include <windows.h>
+#include "sysdeps.h"
 
 #define SPARSE_MAGIC      0xED26FF3A
 #define SPARSE_RAW_CHUNK  0xCAC1

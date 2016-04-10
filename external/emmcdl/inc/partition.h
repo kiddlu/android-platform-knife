@@ -23,7 +23,7 @@ when       who     what, where, why
 #pragma once
 
 
-#include <windows.h>
+#include "sysdeps.h"
 #include "xmlparser.h"
 #include <stdio.h>
 

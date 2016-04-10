@@ -22,7 +22,7 @@ when       who     what, where, why
 #pragma once
 
 #include "serialport.h"
-#include <Windows.h>
+#include "sysdeps.h"
 
 #define SAHARA_HELLO_REQ      0x1
 #define SAHARA_HELLO_RSP      0x2

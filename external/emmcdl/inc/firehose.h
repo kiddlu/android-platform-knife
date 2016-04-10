@@ -25,7 +25,7 @@ when       who     what, where, why
 #include "protocol.h"
 #include "partition.h"
 #include <stdio.h>
-#include <Windows.h>
+#include "sysdeps.h"
 
 #define MAX_RETRY   50
 

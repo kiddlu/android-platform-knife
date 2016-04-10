@@ -20,7 +20,7 @@ when       who     what, where, why
 11/08/11   pgw     Initial version.
 =============================================================================*/
 
-#include "tchar.h"
+#include "auto_tchar.h"
 #include "serialport.h"
 #include "stdlib.h"
 
