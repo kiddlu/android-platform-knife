@@ -24,7 +24,7 @@ when       who     what, where, why
 #include "serialport.h"
 #include "partition.h"
 #include <stdio.h>
-#include "sysdeps.h"
+#include <Windows.h>
 
 #define PACKET_TIMEOUT  1000
 

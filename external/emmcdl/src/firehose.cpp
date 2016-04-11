@@ -21,7 +21,7 @@ when       who     what, where, why
 =============================================================================*/
 
 #include "stdio.h"
-#include "auto_tchar.h"
+#include "tchar.h"
 #include "firehose.h"
 #include "xmlparser.h"
 #include "partition.h"
@@ -284,7 +284,7 @@ int Firehose::WriteData(BYTE *writeBuffer, __int64 writeOffset, DWORD writeBytes
   // This should have log information from device
   // Get the response after read is done
 
-  if (ReadStatus() != ERROR_SUCCESS) return status;
+  if (ReadStatus() != ERROR_SUCCESS) goto WriteSectorsExit;
 
   UINT64 ticks = GetTickCount64();
   //UINT64 dwBufSize = writeBytes;
@@ -297,7 +297,7 @@ int Firehose::WriteData(BYTE *writeBuffer, __int64 writeOffset, DWORD writeBytes
     }
     status = sport->Write(&writeBuffer[i], dwBytesRead);
     if (status != ERROR_SUCCESS) {
-      return status;
+      goto WriteSectorsExit;
     }
     *bytesWritten += dwBytesRead;
     wprintf(L"Sectors remaining %i\r", (int)(writeBytes - i));
@@ -310,6 +310,7 @@ int Firehose::WriteData(BYTE *writeBuffer, __int64 writeOffset, DWORD writeBytes
 
   // Read and display any other log packets we may have
 
+WriteSectorsExit:
   return status;
 }
 
@@ -339,7 +340,7 @@ int Firehose::ReadData(BYTE *readBuffer, __int64 readOffset, DWORD readBytes, DW
 
   // Wait until device returns with ACK or NAK
   while ((status = ReadStatus()) == ERROR_NOT_READY);
-  if (status == ERROR_INVALID_DATA)  return status;
+  if (status == ERROR_INVALID_DATA) goto ReadSectorsExit;
 
   UINT64 ticks = GetTickCount64();
   DWORD bytesToRead = dwMaxPacketSize;
@@ -369,6 +370,7 @@ int Firehose::ReadData(BYTE *readBuffer, __int64 readOffset, DWORD readBytes, DW
   // Get the response after read is done first response should be finished command
   status = ReadStatus();
 
+ReadSectorsExit:
   return status;
 }
 

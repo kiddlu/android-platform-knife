@@ -24,7 +24,7 @@ when       who     what, where, why
 
 #include "partition.h"
 #include "protocol.h"
-#include "sysdeps.h"
+#include <windows.h>
 #include <string.h>
 #include <stdlib.h>
 

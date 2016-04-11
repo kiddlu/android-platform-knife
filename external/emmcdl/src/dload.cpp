@@ -20,7 +20,7 @@ when       who     what, where, why
 11/08/11   pgw     Initial version.
 =============================================================================*/
 
-#include "auto_tchar.h"
+#include "tchar.h"
 #include "dload.h"
 #include "partition.h"
 #include "diskwriter.h"

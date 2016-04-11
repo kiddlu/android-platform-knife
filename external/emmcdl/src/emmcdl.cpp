@@ -31,7 +31,7 @@ when       who     what, where, why
 #include "serialport.h"
 #include "firehose.h"
 #include "ffu.h"
-#include "auto_tchar.h"
+#include "tchar.h"
 #include <winerror.h>
 
 using namespace std;
@@ -388,7 +388,7 @@ int EDownloadProgram(TCHAR *szSingleImage, TCHAR **szXMLFile)
       for(int i=0; szXMLFile[i] != NULL; i++) {
         // Use new method to download XML to serial port
         TCHAR szPatchFile[MAX_STRING_LEN];
-        wcsncpy(szPatchFile,szXMLFile[i],sizeof(szPatchFile));
+        wcsncpy_s(szPatchFile,szXMLFile[i],sizeof(szPatchFile));
         StringReplace(szPatchFile,L"rawprogram",L"patch");
         TCHAR *sptr = wcsstr(szXMLFile[i],L".xml");
         if( sptr == NULL ) return ERROR_INVALID_PARAMETER;
@@ -426,7 +426,7 @@ int EDownloadProgram(TCHAR *szSingleImage, TCHAR **szXMLFile)
           int pstatus = ERROR_SUCCESS;
           // Check if patch file exist
           TCHAR szPatchFile[MAX_STRING_LEN];
-          wcsncpy(szPatchFile, szXMLFile[i], sizeof(szPatchFile));
+          wcsncpy_s(szPatchFile, szXMLFile[i], sizeof(szPatchFile));
           StringReplace(szPatchFile, L"rawprogram", L"patch");
           pstatus = patch.PreLoadImage(szPatchFile);
           if( pstatus == ERROR_SUCCESS ) patch.ProgramImage(&fh);
@@ -530,8 +530,7 @@ int DiskList()
   return ERROR_SUCCESS;
 }
 
-//int __cdecl _tmain(int argc, _TCHAR* argv[])
-int __cdecl main(int argc, _TCHAR* argv[])
+int __cdecl _tmain(int argc, _TCHAR* argv[])
 {
   int dnum = -1;
   int status = 0;

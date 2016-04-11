@@ -22,9 +22,9 @@ when       who     what, where, why
 
 #include "stdio.h"
 #include "stdlib.h"
-#include "auto_tchar.h"
+#include "tchar.h"
 #include "ffu.h"
-#include "sysdeps.h"
+#include "windows.h"
 #include "string.h"
 
 // Constructor

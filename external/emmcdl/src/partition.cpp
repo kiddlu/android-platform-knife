@@ -23,7 +23,7 @@ when       who     what, where, why
 =============================================================================*/
 
 #include "stdio.h"
-#include "auto_tchar.h"
+#include "tchar.h"
 #include "partition.h"
 #include "protocol.h"
 #include "sparse.h"

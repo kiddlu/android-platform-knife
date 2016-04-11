@@ -22,7 +22,7 @@ when       who     what, where, why
 #pragma once
 
 #include "partition.h"
-#include "sysdeps.h"
+#include <windows.h>
 
 #define MAX_XML_LEN         2048
 #define MAX_TRANSFER_SIZE   0x100000
