@@ -52,7 +52,7 @@ typedef struct _STORE_HEADER
     UINT16 MajorVersion, MinorVersion; // used to validate struct
     UINT16 FullFlashMajorVersion, FullFlashMinorVersion; // FFU version, i.e. the image format
     char szPlatformId[192]; // string which indicates what device this FFU is intended to be written to
-    UINT32 dwBlockSizeInBytes; // size of an image block in bytes – the device’s actual sector size may differ
+    UINT32 dwBlockSizeInBytes; // size of an image block in bytes the device actual sector size may differ
     UINT32 dwWriteDescriptorCount; // number of write descriptors to iterate through
     UINT32 dwWriteDescriptorLength; // total size of all the write descriptors, in bytes (included so they can be read out up front and interpreted later)
     UINT32 dwValidateDescriptorCount; // number of validation descriptors to check

@@ -1,0 +1,9 @@
+1. Download VS Express 2010 and install
+http://download.microsoft.com/download/5/C/1/5C156922-CA10-49D8-B7E7-9BF092C3B6EB/VS2010ExpressCHS.iso
+
+2. Download Windows SDK 7.1 and install
+https://www.microsoft.com/en-us/download/details.aspx?id=8279
+
+3.Run setenv.cmd in cmd, or modify param in this batch file
+
+4.Run build.cmd in cmd.
