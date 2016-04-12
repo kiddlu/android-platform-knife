@@ -12,6 +12,9 @@ set BUSYBOX_EXE=%DIR_PATH%\apps\busybox.exe
 set FHLOADER_EXE=%DIR_PATH%\apps\fh_loader.exe
 set SAHARA_EXE=%DIR_PATH%\apps\QSaharaServer.exe
 set ENUMCOM_EXE=%DIR_PATH%\apps\enumcom.exe
+set EMMCDL_EXE=%DIR_PATH%\apps\emmcdl.exe
+
+pushd %TMP%
 
 %ADB_EXE% devices | %BUSYBOX_EXE% sed -n 2p | %BUSYBOX_EXE% grep device >nul
 if "%ERRORLEVEL%"=="0" (
@@ -36,32 +39,32 @@ if "%COM_NUMBER%"=="" (
 	)
 )
 
-%SAHARA_EXE% -p \\.\%COM_NUMBER% -s 13:.\prog_ufs_firehose_8996_ddr.elf
+%SAHARA_EXE% -p \\.\%COM_NUMBER% -s 13:%DIR_PATH%\prog_ufs_firehose_8996_ddr.elf
 %BUSYBOX_EXE% sleep 3
 
-%FHLOADER_EXE% --port=\\.\%COM_NUMBER% --sendxml=rawprogram_unsparse0.xml --search_path=.\ --noprompt --showpercentagecomplete --zlpawarehost=1 --memoryname=UFS
-%FHLOADER_EXE% --port=\\.\%COM_NUMBER% --sendxml=patch0.xml --search_path=.\ --noprompt --showpercentagecomplete --zlpawarehost=1 --memoryname=UFS
-%BUSYBOX_EXE% sleep 3
+%FHLOADER_EXE% --port=\\.\%COM_NUMBER% --sendxml=rawprogram_unsparse0.xml --search_path=%DIR_PATH% --noprompt --showpercentagecomplete --zlpawarehost=1 --memoryname=UFS
+%FHLOADER_EXE% --port=\\.\%COM_NUMBER% --sendxml=patch0.xml --search_path=%DIR_PATH% --noprompt --showpercentagecomplete --zlpawarehost=1 --memoryname=UFS
+%BUSYBOX_EXE% sleep 5
 
-%FHLOADER_EXE% --port=\\.\%COM_NUMBER% --sendxml=rawprogram1.xml --search_path=.\ --noprompt --showpercentagecomplete --zlpawarehost=1 --memoryname=UFS
-%FHLOADER_EXE% --port=\\.\%COM_NUMBER% --sendxml=patch1.xml --search_path=.\ --noprompt --showpercentagecomplete --zlpawarehost=1 --memoryname=UFS
-%BUSYBOX_EXE% sleep 3
+%FHLOADER_EXE% --port=\\.\%COM_NUMBER% --sendxml=rawprogram1.xml --search_path=%DIR_PATH% --noprompt --showpercentagecomplete --zlpawarehost=1 --memoryname=UFS
+%FHLOADER_EXE% --port=\\.\%COM_NUMBER% --sendxml=patch1.xml --search_path=%DIR_PATH% --noprompt --showpercentagecomplete --zlpawarehost=1 --memoryname=UFS
+%BUSYBOX_EXE% sleep 5
 
-%FHLOADER_EXE% --port=\\.\%COM_NUMBER% --sendxml=rawprogram2.xml --search_path=.\ --noprompt --showpercentagecomplete --zlpawarehost=1 --memoryname=UFS
-%FHLOADER_EXE% --port=\\.\%COM_NUMBER% --sendxml=patch2.xml --search_path=.\ --noprompt --showpercentagecomplete --zlpawarehost=1 --memoryname=UFS
-%BUSYBOX_EXE% sleep 3
+%FHLOADER_EXE% --port=\\.\%COM_NUMBER% --sendxml=rawprogram2.xml --search_path=%DIR_PATH% --noprompt --showpercentagecomplete --zlpawarehost=1 --memoryname=UFS
+%FHLOADER_EXE% --port=\\.\%COM_NUMBER% --sendxml=patch2.xml --search_path=%DIR_PATH% --noprompt --showpercentagecomplete --zlpawarehost=1 --memoryname=UFS
+%BUSYBOX_EXE% sleep 5
 
-%FHLOADER_EXE% --port=\\.\%COM_NUMBER% --sendxml=rawprogram3.xml --search_path=.\ --noprompt --showpercentagecomplete --zlpawarehost=1 --memoryname=UFS
-%FHLOADER_EXE% --port=\\.\%COM_NUMBER% --sendxml=patch3.xml --search_path=.\ --noprompt --showpercentagecomplete --zlpawarehost=1 --memoryname=UFS
-%BUSYBOX_EXE% sleep 3
+%FHLOADER_EXE% --port=\\.\%COM_NUMBER% --sendxml=rawprogram3.xml --search_path=%DIR_PATH% --noprompt --showpercentagecomplete --zlpawarehost=1 --memoryname=UFS
+%FHLOADER_EXE% --port=\\.\%COM_NUMBER% --sendxml=patch3.xml --search_path=%DIR_PATH% --noprompt --showpercentagecomplete --zlpawarehost=1 --memoryname=UFS
+%BUSYBOX_EXE% sleep 5
 
-%FHLOADER_EXE% --port=\\.\%COM_NUMBER% --sendxml=rawprogram_unsparse4.xml --search_path=.\ --noprompt --showpercentagecomplete --zlpawarehost=1 --memoryname=UFS
-%FHLOADER_EXE% --port=\\.\%COM_NUMBER% --sendxml=patch4.xml --search_path=.\ --noprompt --showpercentagecomplete --zlpawarehost=1 --memoryname=UFS
-%BUSYBOX_EXE% sleep 3
+%FHLOADER_EXE% --port=\\.\%COM_NUMBER% --sendxml=rawprogram_unsparse4.xml --search_path=%DIR_PATH% --noprompt --showpercentagecomplete --zlpawarehost=1 --memoryname=UFS
+%FHLOADER_EXE% --port=\\.\%COM_NUMBER% --sendxml=patch4.xml --search_path=%DIR_PATH% --noprompt --showpercentagecomplete --zlpawarehost=1 --memoryname=UFS
+%BUSYBOX_EXE% sleep 5
 
-%FHLOADER_EXE% --port=\\.\%COM_NUMBER% --sendxml=rawprogram5.xml --search_path=.\ --noprompt --showpercentagecomplete --zlpawarehost=1 --memoryname=UFS
-%FHLOADER_EXE% --port=\\.\%COM_NUMBER% --sendxml=patch5.xml --search_path=.\ --noprompt --showpercentagecomplete --zlpawarehost=1 --memoryname=UFS
-%BUSYBOX_EXE% sleep 3
+%FHLOADER_EXE% --port=\\.\%COM_NUMBER% --sendxml=rawprogram5.xml --search_path=%DIR_PATH% --noprompt --showpercentagecomplete --zlpawarehost=1 --memoryname=UFS
+%FHLOADER_EXE% --port=\\.\%COM_NUMBER% --sendxml=patch5.xml --search_path=%DIR_PATH% --noprompt --showpercentagecomplete --zlpawarehost=1 --memoryname=UFS
+%BUSYBOX_EXE% sleep 5
 
 rem REST
 %FHLOADER_EXE% --port=\\.\%COM_NUMBER% --noprompt --showpercentagecomplete --zlpawarehost=1 --memoryname=UFS --setactivepartition=1 --reset
@@ -73,6 +76,7 @@ echo ######   No Device Found!!   ######
 echo ###################################
 echo.
 
+popd
 pause
 exit /b 1
 
@@ -82,4 +86,5 @@ echo ###### Sahara Flash Done!! ########
 echo ###################################
 echo.
 
+popd
 pause
