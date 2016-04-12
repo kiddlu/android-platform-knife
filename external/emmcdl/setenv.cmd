@@ -28,9 +28,9 @@
 :: Set the default value for target and current CPU based on processor architecture.
 :: --------------------------------------------------------------------------------------------
 SET "CURRENT_CPU=x64"
-SET "TARGET_CPU=x64"
+SET "TARGET_CPU=x86"
 SET "Configuration=Release"
-SET "TARGET_PLATFORM=xp"
+SET "TARGET_PLATFORM=Win7"
 
 IF "x%TARGET_CPU%x"=="xx" (
 IF /I "%PROCESSOR_ARCHITECTURE%"=="x86" SET "TARGET_CPU=x86" & SET "CURRENT_CPU=x86"

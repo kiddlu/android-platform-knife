@@ -851,6 +851,7 @@ int __cdecl _tmain(int argc, _TCHAR* argv[])
     }
     break;
   case EMMC_CMD_RESET:
+      wprintf(_T("Sending command to reset device\n"));
 	  status = ResetDevice();
 	  break;
   case EMMC_CMD_LOAD_MRPG:
