@@ -1,0 +1,11 @@
+# ignore all generation products
+*~
+\#*\#
+.#*
+debian
+*.deb
+*.log
+*.orig
+*.bz2
+*.gz
+*.o

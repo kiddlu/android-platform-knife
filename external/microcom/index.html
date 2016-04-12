@@ -1,0 +1,446 @@
+<!DOCTYPE html PUBLIC "-//w3c//dtd html 4.0 transitional//en">
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;
+      charset=windows-1252">
+    <meta name="GENERATOR" content="Mozilla/4.73 [en] (WinNT; U)
+      [Netscape]">
+    <meta name="Description" content="just another open source project">
+    <meta name="KeyWords" content="microcom, Linux, UNIX, C, serial
+      terminal, free software">
+    <meta name="Author" content="Lucian Jurubita">
+    <title>microcom serial terminal emulator</title>
+    <script type="text/javascript" language="JavaScript" src="microcom.js"></script>
+  </head>
+  <body style="background-color: rgb(255, 255, 255);" link="#000000"
+    vlink="#ff0000">
+    <a name="Top"></a> <font face="Verdana, Sans-Serif">
+      <table border="0" cellpadding="0" cellspacing="0" width="600">
+        <tbody>
+          <tr>
+            <td>
+              <center><b><font face="arial"><font size="+2">microcom
+                      Serial Terminal Emulator</font></font></b></center>
+              <div align="right"><img src="./cgi-bin/count.pl" alt="cgi
+                  counter"></div>
+              <br>
+              <a name="top"></a> <br>
+              &nbsp;
+              <table cols="2" width="100%">
+                <tbody>
+                  <tr>
+                    <td><img src="penguin.gif" alt="Linux Penguin"
+                        height="250" align="left" width="225"></td>
+                    <td>1. <a href="#Desc">Description</a> <br>
+                      2. <a href="#Features">Features</a> <br>
+                      3. <a href="#usage">Usage</a> <br>
+                      4. <a href="#setup">Setup and Help</a> <br>
+                      5. <a href="#script">Script Language</a> <br>
+                      6. <a href="#distribution">Distribution</a> <br>
+                      7. <a href="#lrp">LRP disk</a> <br>
+                      8. <a href="#support">Support</a> <br>
+                      9. <a href="#ack">Acknowledgment</a></td>
+                  </tr>
+                </tbody>
+              </table>
+              <table width="100%">
+                <tbody>
+                  <tr>
+                    <td width="4%"><br>
+                    </td>
+                    <td>
+                      <p><a name="Desc"></a><b><font size="+1">1.
+                            Description</font></b> </p>
+                      <p>microcom is a minicom-like serial terminal
+                        emulator with scripting support. The requirement
+                        for this program was to be small enough to fit
+                        on a floppy-based Linux distribution - such as
+                        the one from <a
+                          href="javascript:wopen('http://www.linuxrouter.org')">Linux
+Router
+
+                          Project</a>. We managed to bring the
+                        executable size down under 17k, no ncurses
+                        library support required. <br>
+                        This software is released under <a
+                          href="javascript:wopen('http://www.gnu.org/copyleft/gpl.html')">GNU
+General
+
+                          Public License</a>. </p>
+                      <p>Rev. 1.03 - February 2013<br>
+                        - new Makefile and warning message when building
+                        with GCC 4.X fixed.<br>
+                        - fixed bug: script file name from the command
+                        line was not read correctly.<br>
+                        - new sendif command to send immediatly a string
+                        when an expected string matchs.<br>
+                        - suspend script command renamed to exit.<br>
+                        - timeout <font face="Verdana, Sans-Serif">script
+
+                          command renamed to suspend</font>.<br>
+                        - timeout script command set now the time out
+                        value used by the expect and sendif commands.<br>
+                        - add verbose mode when running a script.<br>
+                        - add exit on time out option&nbsp;<font
+                          face="Verdana, Sans-Serif">when running a
+                          script.<br>
+                          - add command line option to enable filter to
+                          log only printable characters.<br>
+                          - </font><font face="Verdana, Sans-Serif"><font
+                            face="Verdana, Sans-Serif">add command line
+                            option to set the initial time out&nbsp;</font>value.</font></p>
+                      <p>Rev. 1.02 - August 2000 <br>
+                        - fixed bug: if the script fails because of a
+                        syntax error, terminal settings are not restored
+                        correctly upon program exit; <br>
+                        - fixed bug: if a script line is longer than 80
+                        characters, the line will not be interpreted
+                        correctly <br>
+                        - fixed documentation <br>
+                        - add modem autodetection <br>
+                        - add log facility </p>
+                      <p>Rev. 1.01 - March 2000 <br>
+                        - correctly restore terminal settings upon
+                        program exit; <br>
+                        - merge fix submitted by Wesley Stupar: "In the
+                        case of ~tn or ~th or ~ts, the pts structure was
+                        not getting initialized before saving. It made
+                        the connection freeze in my case." </p>
+                      <p>Rev. 1.00 - February 2000 </p>
+                      <p><a name="Features"></a><b><font size="+1">2.
+                            Features</font></b> </p>
+                      <ul>
+                        <li> Add/strip line feeds, local echo control</li>
+                        <li> Hardware/software flow control support</li>
+                        <li> 8 bit, one stop, no parity</li>
+                        <li> Support for standard speeds form 1200 to
+                          460800 bps</li>
+                        <li> Default UNIX tty emulation</li>
+                        <li> BASIC like script language support</li>
+                        <li> Distribution: source code, LINUX
+                          executable, LRP based floppy</li>
+                        <li> Automatic modem detection</li>
+                      </ul>
+                      <p><br>
+                        <a name="usage"></a><b><font size="+1">3. Usage</font></b>
+                      </p>
+                      <p>The command to start microcom is: </p>
+                      <pre>microcom [options]<br> [options] include:<br>    -Ddevfile       use the specified serial port device;<br>                    if a port is not provided, microcom<br>                        will try to autodetect a modem<br>           example: -D/dev/ttyS3<br>    -S              run script from script.scr (default)<br>    -Sscrfile       run script from scrfile<br>    -t90            set initial time out to 90 s<br>    -F              log only printable charaters<br>    -L              enable logging in microcom.log logfile (default)<br>    -Llogfile       enable logging in the specified logfile<br><br>WinDOS to Linux mapping of the serial ports is as follows:<br><br>	WinDOS			Linux<br>	-----------------------------------<br>	com1			/dev/ttyS0<br>	com2			/dev/ttyS1<br>	com3			/dev/ttyS2<br>	com4			/dev/ttyS3<br><br>Usage examples:<br>	microcom              - microcom will try to autodetect a modem<br>	microcom -D/dev/ttyS3 - run microcom on /dev/ttyS3 (com4 equiv.) <br>	microcom -S           - start the default script.scr script<br>	microcom -Smyscript   - run the script from myscript file<br></pre>
+                      <p><br>
+                        <a name="setup"></a><b><font size="+1">4. Setup
+                            and Help</font></b> </p>
+                      <p>To access the setup and help facilities of
+                        microcom press the ~ key. The program will
+                        display <b>the main help screen</b>:&nbsp; </p>
+                      <pre><font face="Courier New,Courier">**********Help***********<br>       x - quit microcom<br>       b - send break<br>       l - log on<br>       s - start script<br>       t - set terminal<br>       q - quit help<br>*************************</font></pre>
+                      <br>
+                      - x - exit microcom; <br>
+                      - b - send a break on the comm line; <br>
+                      - l - start/stop logging data coming on the com
+                      port into microcom.log file <br>
+                      - s - start the script: script.scr or the one
+                      specified on the command line when the program was
+                      started; if the script is already running, same
+                      key will stop the script; <br>
+                      - t - go to the terminal help screen.
+                      <p><b>The terminal help screen</b>:&nbsp; </p>
+                      <pre><font face="Courier New,Courier">******Set terminal ******<br>       p - set speed<br>       m - no CR/NL mapping<br>       n - no flow control<br>       h - hardware flow control<br>       s - software flow control<br>       q - quit help<br>*************************</font></pre>
+                      <br>
+                      - m - enable/disable CR/NL mapping for terminal; <br>
+                      - n, h, s - change the flow control for the comm
+                      line - no/hardware/software flow control; the
+                      preferred setting when connecting through a modem
+                      is hardware flow control; <br>
+                      - p - go to the speed help screen;&nbsp;
+                      <p><b>The speed help screen</b> </p>
+                      <pre><font face="Courier New,Courier">******Set speed *********<br>       a - 1200<br>       b - 2400<br>       c - 4800<br>       d - 9600<br>       e - 19200<br>       f - 38400<br>       g - 57600<br>       h - 115200<br>       i - 230400<br>       j - 460800<br>       q - quit help<br>*************************</font></pre>
+                      Chose the speed of the serial comm port. <br>
+                      <p><a name="script"></a><b><font size="+1">5.
+                            Script Language</font></b> <br>
+                      </p>
+                      <p><b>5.1 Variables</b> <br>
+                        The only type of variable supported by microcom
+                        is integer. </p>
+                      <p><b>5.1.1 Definition and initialization</b> <br>
+                        Use set command to define and initialize a
+                        variable. <br>
+                        Example: </p>
+                      <pre><font face="Courier New,Courier">     set a 7</font></pre>
+                      Initialize a=7&nbsp;
+                      <p><b>5.1.2 Increment</b> <br>
+                        Use inc command to increment the value of the
+                        variable. <br>
+                        Example:</p>
+                      <pre><font face="Courier New,Courier">    inc a</font></pre>
+                      Increment a.
+                      <p><b>5.1.3 Decrement</b> <br>
+                        Use dec command to decrement the value of the
+                        variable. <br>
+                        Example: </p>
+                      <pre><font face="Courier New,Courier">    dec a</font></pre>
+                      Decrementing a variable that has the value 0, will
+                      have the result -1 - variables are integers.
+                      <p><b>5.2 Program control</b> </p>
+                      <p><b>5.2.1 Comment</b> <br>
+                        A comment line always starts with #. <br>
+                        Example: </p>
+                      <pre><font face="Courier New,Courier">    #this is a comment</font></pre>
+                      <b>5.2.2 If statement</b> <br>
+                      Use if statement for conditional branching in the
+                      program. <br>
+                      Example:
+                      <pre><font face="Courier New,Courier">    if a &gt; 0 print message</font></pre>
+                      or
+                      <pre><font face="Courier New,Courier">    if b != a goto label</font></pre>
+                      For conditional testing, the supported operators
+                      are:
+                      <pre><font face="Courier New,Courier">    !=, =,  &gt;, &lt;    </font></pre>
+                      <b>5.2.3 Goto</b> <br>
+                      Use the goto statement to jump to another line of
+                      program. <br>
+                      Example:
+                      <pre><font face="Courier New,Courier">    if a &gt; 10 goto label1<br>    #more program lines .......<br>label1:<br>    print message</font></pre>
+                      <b>5.2.4 Exit script</b><br>
+                      Use exit to end the script. By default, when the
+                      execution of the script reaches the end, the
+                      script is restarted automatically. <br>
+                      Example:
+                      <pre><font face="Courier New,Courier">    if a &lt; 10 exit<br></font></pre>
+                      <font face="Verdana, Sans-Serif"><span
+                          style="text-decoration: underline;">Note</span>:
+                        in versions below 1.03, this </font><span
+                        style="font-family: Verdana, Sans-Serif;">function
+
+                        was named suspend.</span><br>
+                      <br>
+                      <b>5.2.5 Unix shell invocation</b> <br>
+                      A command starting with ! is redirected to the
+                      current unix shell <br>
+                      Example:
+                      <pre><font face="Courier New,Courier">    ! "ls -al"</font></pre>
+                      Please note the blank space following !
+                      character.&nbsp;
+                      <p><b>5.2.6 </b><font face="Verdana, Sans-Serif"><b>Suspend
+
+                            program</b> </font><br>
+                        Use suspend to wait for a specified number of
+                        seconds: <br>
+                        Example: </p>
+                      <pre><font face="Courier New,Courier">    #wait for 7 seconds<br>    suspend 7<br></font></pre>
+                      <font face="Verdana, Sans-Serif"><font
+                          face="Verdana, Sans-Serif"><span
+                            style="text-decoration: underline;">Note</span>:
+                          in versions below 1.03,</font></font><font
+                        face="Verdana, Sans-Serif"> the suspend command
+                        was ending the script, this function was named
+                        timeout.</font><br>
+                      <p><b>5.2.6 </b><font face="Verdana, Sans-Serif"><b>Timeout</b>
+                        </font><br>
+                        Use timeout to set the time out value (in
+                        seconds) used by expect and sendif when waiting
+                        for a string, if the value is 0 then the default
+                        time out value will be set (currently 60s). <br>
+                        Example: </p>
+                      <pre><font face="Courier New,Courier">    # set time out to 15 minutes<br>    timeout 900<br></font></pre>
+                      <font face="Verdana, Sans-Serif"><font
+                          face="Verdana, Sans-Serif"><span
+                            style="text-decoration: underline;">Note</span>:
+                          in versions below 1.03,</font></font><font
+                        face="Verdana, Sans-Serif"> the timeout command
+                        was suspending the script during the specified
+                        amount of time. Use suspend now.<br>
+                        <br>
+                      </font><font face="Verdana, Sans-Serif"><b>5.2.7
+                          TimeoutExit<br>
+                        </b></font><font face="Verdana, Sans-Serif"> Use
+                        timeoutexit to enable or disable&nbsp;the script
+                        ending if the expected string has not been found
+                        during the waiting period. <br>
+                        The parameter is optional and could a boolean
+                        value or an integer (0 means false, others
+                        values, true). If there is no parameter then the
+                      </font><font face="Verdana, Sans-Serif"><font
+                          face="Verdana, Sans-Serif">timeoutexit change
+                          its value from true to false and vice versa
+                          (currently its initial value is false, i.e. go
+                          one with the next instruction on time out).<br>
+                        </font></font><font face="Verdana, Sans-Serif">
+                        <pre><font face="Courier New,Courier">    # exit on timeout<br>    timeoutexit true</font></pre>
+                      </font><font face="Verdana, Sans-Serif"><font
+                          face="Verdana, Sans-Serif"><b>5.2.8 Verbose<br>
+                          </b></font></font><font face="Verdana,
+                        Sans-Serif"><font face="Verdana, Sans-Serif">
+                          Use verbose to enable or disable</font></font>
+                      the verbose mode of scripts running, display
+                      of&nbsp;progress message during waits for example.<br>
+                      <font face="Verdana, Sans-Serif"><font
+                          face="Verdana, Sans-Serif">The parameter is
+                          optional and could be a boolean value or an
+                          integer (0 means false, others values, true).
+                          If there is no parameter then the </font><font
+                          face="Verdana, Sans-Serif"><font
+                            face="Verdana, Sans-Serif">timeoutexit
+                            change its value from true to false and vice
+                            versa (currently its initial value is
+                            false).<br>
+                          </font></font></font><font face="Verdana,
+                        Sans-Serif"><font face="Verdana, Sans-Serif">
+                          <pre><font face="Courier New,Courier">    # enable verbose mode<br>    verbose </font></pre>
+                        </font></font><font face="Verdana, Sans-Serif"><font
+                          face="Courier New,Courier"><font
+                            face="Verdana, Sans-Serif"><b>5.2.4 Quit
+                              program<br>							  
+                            </b></font></font></font><font
+                        face="Verdana, Sans-Serif">
+						  Use quit to exit from the script and close the microcom program, an optional exit code may be provided as an argument.
+						  <pre><font face="Courier New,Courier">    # close the program and send back value 0 to it's parent<br>    quit 0</font></pre>
+						<b>5.3 Display
+                        access</b>
+                      <p>The only operation supported in this category
+                        is to send a string to the display using print
+                        command. <br>
+                        Example: </p>
+                      <pre><font face="Courier New,Courier">    print message</font></pre>
+                      This will print "message\n" on the screen. The
+                      string will not get sent to the comm port.
+                      <p><b>5.4 Comm port access</b> </p>
+                      <p><b>5.4.1 Send</b> <br>
+                        Use send command to send a string to the comm
+                        port. <br>
+                        Example: </p>
+                      <pre><font face="Courier New,Courier">   send at&amp;f</font></pre>
+                      This will send "at&amp;f\n" to the comm port.
+                      <p><b>5.4.2 Expect</b> <br>
+                        Use expect command to wait for a specific string
+                        to be received from the comm port. <br>
+                        Example: </p>
+                      <pre><font face="Courier New,Courier">    expect CONNECT</font></pre>
+                      The program will wait to get "CONNECT" from the
+                      modem. <br>
+                      expect command also implements a timeout of 60
+                      seconds. In case the expected string does not
+                      arrive form comm port, the command will timeout
+                      and it will automatically restart the script from
+                      the beginning. This functionality is used in
+                      implementing error recovery in the script, as in
+                      the next example:
+                      <pre><font face="Courier New,Courier">
+    #the script starts by sending several \n to the modem;
+    #this is the error recovery phase,&nbsp;
+    #just in case the first time it timeout the expect command;
+    send
+    send
+    #just reset the modem
+    send at&amp;f
+    #dial phone number
+    send attd 2225151
+    #wait for the connection - timeout and restart the script if necessary
+    expect CONNECT
+    print Call connected</font></pre>
+                      <p><font face="Verdana, Sans-Serif"><b>5.4.2
+                            Sendif</b><br>
+                          Use sendif command to wait for a specific
+                          string to be received from the comm port (like
+                          expect) and send a string when it occurs.
+                          Quicker than using the expect then the send
+                          commands.</font><font face="Verdana,
+                          Sans-Serif"> <br>
+                          Example: </font><font face="Verdana,
+                          Sans-Serif"> </font></p>
+                      <pre><font face="Verdana,
+                          Sans-Serif"><font face="Courier New,Courier">     # wait for the prompt then send a RESET command<br>     sendif "COMMAND&gt;" RESET</font></font></pre>
+                      <font face="Verdana, Sans-Serif"> </font>
+                      <p> <a name="distribution"></a><b><font size="+1">6.
+
+                            Distribution</font></b> <br>
+                        &nbsp; </p>
+                      <blockquote><i>This program is free software; you
+                          can redistribute it and/or modify it under the
+                          terms of the <a
+                            href="javascript:wopen('http://www.gnu.org/copyleft/gpl.html')">GNU
+
+                            General Public License</a> as published by
+                          the Free Software Foundation; either version 2
+                          of the License, or (at your option) any later
+                          version.&nbsp;</i> <br>
+                        <i>This program is distributed in the hope that
+                          it will be useful, but WITHOUT ANY WARRANTY;
+                          without even the implied warranty of
+                          MERCHANTABILITY or FITNESS FOR A PARTICULAR
+                          PURPOSE. See the GNU General Public License
+                          for more details.&nbsp;</i></blockquote>
+                      <p><br>
+                        <a href="m102.tar.gz">m102.tar.gz</a> (xx,xxx
+                        bytes) - source code for microcom,&nbsp; Linux
+                        (Mandrake 6.0) executable;&nbsp; </p>
+                      <p><a href="floppy.tar.gz">floppy.tar.gz</a>
+                        (1,380,153) - utilities and image to create a
+                        LRP disk (no FPU emulation) with microcom
+                        installed&nbsp;&nbsp;</p>
+                      <p>New versions, starting from 1.03, are available
+                        from&nbsp;<font face="Verdana, Sans-Serif"><a
+                            href="https://github.com/Oliviers-OSS/microcom">GitHub</a>.</font>
+                      </p>
+                      <p><a name="lrp"></a><b><font size="+1">7. LRP
+                            disk</font></b> </p>
+                      <p><a
+                          href="javascript:wopen('http://www.linuxrouter.org')">Linux
+
+                          Router Project</a> (LRP) is a
+                        networking-centric micro-distribution of Linux.
+                        LRP is small enough to fit on a single 1.44MB
+                        floppy disk, and makes building and maintaining
+                        routers, access servers, thin servers, thin
+                        clients, network appliances, and typically
+                        embedded systems next to trivial. <br>
+                        <i>floppy.img</i> is the original LRP disk
+                        image, with support for serial port and microcom
+                        terminal emulator. This image has to be
+                        transferred on a blank DOS formatted floppy
+                        disk. <br>
+                        - under DOS: run rawrite2.exe and supply the
+                        drive and image file when prompted <br>
+                        - under Linux: <br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dd if=floppy.img
+                        of=/dev/fd0 <br>
+                        rawrite2.exe program is included in the
+                        distribution. </p>
+                      <p><a name="support"></a><b><font size="+1">8.
+                            Support</font></b> </p>
+                      <p>The development page for microcom was located
+                        at <a
+                          href="http://sourceforge.net/project/?group_id=2949">sourceforge.net</a>
+                        and originals authors were reachable by <a
+                          href="mailto:ljurubita@hotmail.com">email</a>
+                        too.</p>
+                      <p> This version is hosted by <a
+                          href="https://github.com/Oliviers-OSS/microcom">
+                          GitHub</a>.<br>
+                      </p>
+                      <p><a name="ack"></a><b><font size="+1">9.
+                            Acknowledgment</font></b> </p>
+                      <p>The starting point of microcom Serial Terminal
+                        Emulator was robin.c program described in <i><a
+href="javascript:wopen('http://www.awl.com/cseng/books/lad/')">Linux
+                            Application Development</a></i> by Michael
+                        K. Johnson and Erik W. Troan. </p>
+                      <p>The backbone of the scripting facilities of
+                        microcom is script.c developed by Miquel van
+                        Smoorenburg for minicom program.<br>
+                      </p>
+                      <p>The original program (up to 1.02) was written
+                        by Anca and Lucian Jurubita.<br>
+                      </p>
+                      <hr width="100%"> <i> <a href="#top">top</a> / <a
+                          href="mailto:ljurubita@hotmail.com">email</a>
+                      </i> </td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </font>
+  </body>
+</html>

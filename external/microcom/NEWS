@@ -1,0 +1,3 @@
+New command line parameter to set the initial terminal speed.
+Code reformatted using "astyle -A3 --convert-tabs *.c *.h"
+    

@@ -1,0 +1,125 @@
+2014-06-29 17:47:09 +0200 Olivier Charloton
+   * Change request:  set the terminal speed on startup.
+   * Code reformatted using astyle (K&R style).
+
+
+2013-03-28 21:04:13 +0100 Olivier Charloton 
+
+	* New script keyword: quit to exit from the script AND close the program.
+	* The script keyword ! now honors the environment variables, like send and sendif.
+
+
+2013-03-13 19:08:34 +0100 Olivier Charloton 
+
+	* New autodetect procedures to detect a modem or any connected serial device sending data.
+	* Changelog pre-build in the Makefile corrected.
+	* New build option: debug and use of modem commands to detect the right serial port.
+	* Filter flag to display printable only characters corrected to respect the documentation.
+	* Small work around to solve IP address not set when the two network interfaces are directly linked and the remote one is temporary down.
+
+
+2013-02-25 10:59:41 +0100 Olivier Charloton 
+
+	* add the name of the logfile can now be defined in the command line.
+	* configure updated.
+	* Makefile.am modified to start building the ChangeLog file.
+	* index.html documentation file updated.
+
+2013-02-24 19:33:40 +0100 Olivier Charloton 
+
+	* add read of environment variables.
+	* add read of special environment variables to send the IP and MAC address.
+	* set version number to 1.04 for the next release.
+	* add Miquel van Smoorenburg in the AUTHORS list.
+
+
+2013-02-23 22:07:25 +0100 Olivier Charloton 
+
+	* adaptations for using autotools.
+
+
+2013-02-23 17:30:23 +0100 Olivier Charloton 
+
+	* use getopt_long now to parse the command line.
+	* small corrections in the index.html documentation file.
+
+
+2013-02-22 21:54:35 +0100 Olivier Charloton 
+
+	* added control and traces in the send data funtion.
+	* new cmd line option F to enable filter (keep only printable characters) when logging data from the serial link.
+	* new cmd line option t to set the initial value of the time out.
+	* new log data (in & out) management.
+	* index.html updated.
+
+
+2013-02-21 14:37:47 +0100 Olivier Charloton 
+
+	* add verbose mode when running a script
+	* add exit on time out option when running a script
+	* missing DEBUG_VAR_BOOL macro added when building without the _DEBUG_ symbol defined
+	* symbols TRUE & FALSE added
+
+
+2013-02-21 10:30:26 +0100 Olivier Charloton 
+
+	* suspend "renamed" to exit
+	* timeout "renamed" to suspend
+	* timeout now set the time out value used by expect and sendif
+	* index.html updated
+
+
+2013-02-19 19:29:21 +0100 Olivier Charloton 
+
+	* new function getstring return an empty string instead of NULL
+	* (unlike getword) to allow sending of only a carriage return.
+	* a few traces added or completed.
+
+
+2013-02-19 12:34:18 +0100 Olivier Charloton 
+
+	* new script commands: sendif & exit , a few debug traces added
+
+
+2013-02-19 09:53:58 +0100 Olivier Charloton 
+
+	* .gitignore added.
+	* script filename read from command line bug corrected.
+	* memory allocation test added in script_init function.
+
+
+2013-02-19 06:30:22 +0100 Olivier Charloton 
+
+	* Merge https://github.com/Oliviers-OSS/microcom
+
+
+2013-02-19 06:24:08 +0100 Olivier Charloton 
+
+	* new program's traces management.
+	* a bit of code reformatting and cleanup.
+
+
+2013-02-19 05:32:11 +0100 Olivier Charloton 
+
+	* new logFile management: logFlag removed, activation from cmd line, a bit of refactoring.
+	* new prompt to avoid confusion with the program output received by the serial link.
+	* new default values: 9600 8N1 no control flow nor mapping carriage return to new line on output.
+	* a few traces added.
+
+
+2013-02-13 11:16:55 -0800 Olivier Charloton 
+
+	* Create README.md
+
+
+
+2013-02-12 02:09:17 +0100 Olivier Charloton 
+
+	* first set of patchs: better error messages, no more warning during build, new Makefile, ttyUSBx management
+
+
+2013-02-12 00:31:29 +0100 Olivier Charloton 
+
+	* Initial 1.0.2 version from http://sources.buildroot.net/
+
+
