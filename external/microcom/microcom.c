@@ -33,7 +33,7 @@ struct termios pots; /* old port termios settings to restore */
 struct termios sots; /* old stdout/in termios settings to restore */
 extern unsigned int timeout; /* timeout value used when waiting for a string */
 unsigned int options = 0x0; /* programs'options flags */
-speed_t initial_speed = B9600;
+speed_t initial_speed = B115200;
 static const speed_t invalid_speed_parameter = (speed_t)-1;
 
 void init_comm(struct termios *pts)
@@ -65,7 +65,7 @@ void init_comm(struct termios *pts)
     /*pts->c_cflag |= CRTSCTS;
     pts->c_iflag &= ~(IXON | IXOFF | IXANY);*/
 
-    /* set 9600 bps speed by default */
+    /* set 115200 bps speed by default */
     cfsetospeed(pts, initial_speed);
     cfsetispeed(pts, initial_speed);
 }
@@ -158,7 +158,7 @@ static void main_help(FILE *output)
             "\t-S<scrfile>,--script=<scrfile>  run script from scrfile\n"
             "\t-t<timeout>,--timeout=<timeout> initial timeout value in seconds\n"
             "\t-F,--filter                     enable filter \"printable only characters in logs\" \n"
-            "\t-s,--speed=<initial speed>      set initial terminal speed (input and output, default is 9600 bps) \n"
+            "\t-s,--speed=<initial speed>      set initial terminal speed (input and output, default is 115200 bps) \n"
             "\t-h,--help                       printf this help\n"
             "\t-v,--version                    display the program's version number\n"
             "\t-L,--log                        enable session logging in microcom.log file\n"
