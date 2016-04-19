@@ -41,15 +41,15 @@ if  [ ! -n "$2" ] ;then
 else
   OUTPUT=`readlink -f $2`
 fi
-LOOPDEV=`losetup -f`
 MOUNTPONIT=/tmp/vfat.dir.$RANDOM
 
 SIZE=`du -sb $INPUT | awk '{print $1}'`
 SIZE=`echo "$SIZE * 1.1 / 1" | bc`
 
-dd if=/dev/zero of=$OUTPUT count=1 bs=$SIZE > /dev/null
-losetup -f $OUTPUT
-mkfs.vfat $LOOPDEV > /dev/null
+#dd if=/dev/zero of=$OUTPUT count=1 bs=$SIZE > /dev/null
+truncate -s $SIZE $OUTPUT
+LOOPDEV=`losetup -f $OUTPUT --show`
+mkdosfs -F 32  $LOOPDEV > /dev/null
 mkdir $MOUNTPONIT
 mount -t vfat $LOOPDEV $MOUNTPONIT
 
