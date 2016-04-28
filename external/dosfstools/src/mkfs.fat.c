@@ -47,10 +47,7 @@
 #include "version.h"
 
 #include <fcntl.h>
-#include <linux/hdreg.h>
 #include <sys/mount.h>
-#include <linux/fs.h>
-#include <linux/fd.h>
 #include <endian.h>
 #include <mntent.h>
 #include <signal.h>
@@ -67,6 +64,49 @@
 #include <stdint.h>
 #include <endian.h>
 #include <getopt.h>
+
+#ifndef __CYGWIN__
+#include <linux/hdreg.h>
+#include <linux/fs.h>
+#include <linux/fd.h>
+#else
+#include <cygwin/hdreg.h>
+#include <cygwin/fs.h>
+
+/*
+ * Geometry
+ */
+struct floppy_struct {
+  unsigned int  size,   /* nr of sectors total */
+      sect,   /* sectors per track */
+      head,   /* nr of heads */
+      track,    /* nr of tracks */
+      stretch;  /* bit 0 !=0 means double track steps */
+          /* bit 1 != 0 means swap sides */
+          /* bits 2..9 give the first sector */
+          /*  number (the LSB is flipped) */
+#define FD_STRETCH 1
+#define FD_SWAPSIDES 2
+#define FD_ZEROBASED 4
+#define FD_SECTBASEMASK 0x3FC
+#define FD_MKSECTBASE(s) (((s) ^ 1) << 2)
+#define FD_SECTBASE(floppy) ((((floppy)->stretch & FD_SECTBASEMASK) >> 2) ^ 1)
+
+  unsigned char gap,    /* gap1 size */
+
+      rate,   /* data rate. |= 0x40 for perpendicular */
+#define FD_2M 0x4
+#define FD_SIZECODEMASK 0x38
+#define FD_SIZECODE(floppy) (((((floppy)->rate&FD_SIZECODEMASK)>> 3)+ 2) %8)
+#define FD_SECTSIZE(floppy) ( (floppy)->rate & FD_2M ? \
+           512 : 128 << FD_SIZECODE(floppy) )
+#define FD_PERP 0x40
+
+      spec1,    /* stepping rate, head unload time */
+      fmt_gap;  /* gap2 size */
+  const char  * name; /* used only for predefined formats */
+};
+#endif
 
 #include "msdos_fs.h"
 
@@ -553,7 +593,7 @@ static void establish_params(int device_num, int size)
 
 	} else {		/* is a floppy diskette */
 
-	    if (ioctl(dev, FDGETPRM, &param))	/*  Can we get the diskette geometry? */
+	    //if (ioctl(dev, FDGETPRM, &param))	/*  Can we get the diskette geometry? */
 		die("unable to get diskette geometry for '%s'");
 	}
 	bs.secs_track = htole16(param.sect);	/*  Set up the geometry information */

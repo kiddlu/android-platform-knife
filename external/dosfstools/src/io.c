@@ -39,7 +39,12 @@
 #include <sys/ioctl.h>
 #include <errno.h>
 #include <fcntl.h>
-#include <linux/fd.h>
+//#include <linux/fd.h>
+
+#if defined(__CYGWIN__)
+#define lseek64 lseek
+#define off64_t off_t 
+#endif
 
 #include "fsck.fat.h"
 #include "common.h"
