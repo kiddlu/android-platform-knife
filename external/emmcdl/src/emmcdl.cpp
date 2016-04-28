@@ -305,10 +305,21 @@ int WriteGPT(int dnum, TCHAR *szPartName, TCHAR *szBinFile)
 
 int ResetDevice()
 {
-  Dload dl(&m_port);
   int status = ERROR_SUCCESS;
+  if (m_emergency) {
+    Firehose fh(&m_port);
+    fh.SetDiskSectorSize(m_sector_size);
+    if (m_verbose) fh.EnableVerbose();
+    status = fh.ConnectToFlashProg(&m_cfg);
+    if (status != ERROR_SUCCESS) return status;
+    wprintf(L"Connected to flash programmer, starting reset\n");
+    status = fh.DeviceReset();
+  }
+  else {
+  Dload dl(&m_port);
   if( status != ERROR_SUCCESS ) return status;
   status = dl.DeviceReset();
+  }
   return status;
 }
 
