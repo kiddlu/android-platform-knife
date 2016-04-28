@@ -35,8 +35,11 @@ when       who     what, where, why
 #include <winerror.h>
 
 using namespace std;
+#define CLASS_DLOAD  0
+#define CLASS_SAHARA 1
 
 static int m_protocol = FIREHOSE_PROTOCOL;
+static int m_class = CLASS_SAHARA;
 static int m_chipset = 8974;
 static int m_sector_size = 512;
 static bool m_emergency = false;
@@ -384,7 +387,7 @@ int EDownloadProgram(TCHAR *szSingleImage, TCHAR **szXMLFile)
     // Wait for device to re-enumerate with flashprg
     status = dl.ConnectToFlashProg(2);
     if( status != ERROR_SUCCESS ) return status;
-    wprintf(L"Connected to flash programmer, starting download\n");
+    wprintf(L"DLOAD Connected to flash programmer, starting download\n");
     dl.OpenPartition(PRTN_EMMCUSER);
     status = dl.LoadImage(szSingleImage);
     dl.ClosePartition();
@@ -393,7 +396,7 @@ int EDownloadProgram(TCHAR *szSingleImage, TCHAR **szXMLFile)
     if( m_protocol == STREAMING_PROTOCOL ) {
       status = dl.ConnectToFlashProg(4);
       if( status != ERROR_SUCCESS ) return status;
-      wprintf(L"Connected to flash programmer, starting download\n");
+      wprintf(L"STREAMING_PROTOCOL Connected to flash programmer, starting download\n");
       
       // Download all XML files to device 
       for(int i=0; szXMLFile[i] != NULL; i++) {
@@ -420,7 +423,7 @@ int EDownloadProgram(TCHAR *szSingleImage, TCHAR **szXMLFile)
       if(m_verbose) fh.EnableVerbose();
       status = fh.ConnectToFlashProg(&m_cfg);
       if( status != ERROR_SUCCESS ) return status;
-      wprintf(L"Connected to flash programmer, starting download\n");
+      wprintf(L"FIREHOSE_PROTOCOL Connected to flash programmer, starting download\n");
 
       // Download all XML files to device
       for (int i = 0; szXMLFile[i] != NULL; i++) {
@@ -793,6 +796,10 @@ int __cdecl _tmain(int argc, _TCHAR* argv[])
      m_emergency = true;
   }
 
+  wprintf(L"\n===============Device Class:%s Protocol:%s Emergency:%s================\n",
+                   m_class == CLASS_SAHARA? L"sahara":L"dload",
+                   m_protocol == FIREHOSE_PROTOCOL?L"firehose":L"streaming",
+                   m_emergency?L"true" : L"false");
   // If there is a special command execute it
   switch(cmd) {
   case EMMC_CMD_DUMP:

@@ -216,7 +216,7 @@ int Sahara::LoadFlashProg(TCHAR *szFlashPrg)
       return GetLastError();
     }
 
-    //Log(L"FileOffset %i bytesRead %i\n", read_data_offset, bytesRead);
+    Log(L"FileOffset %i bytesRead %i\n", read_data_offset, bytesRead);
 
     if (sport->Write(dataBuf,bytesRead) != ERROR_SUCCESS ) {
       Log(L"Failed to write data to device in IMEM\n");
