@@ -1,0 +1,17 @@
+.PHONY:all
+all:
+	make -f Makefile.mkfs.fat
+	make -f Makefile.fsck.fat
+	make -f Makefile.fatlabel
+
+.PHONY:install
+install:
+	make -f Makefile.mkfs.fat install
+	make -f Makefile.fsck.fat install
+	make -f Makefile.fatlabel install
+	
+.PHONY:clean
+clean:
+	make -f Makefile.mkfs.fat clean
+	make -f Makefile.fsck.fat clean
+	make -f Makefile.fatlabel clean
