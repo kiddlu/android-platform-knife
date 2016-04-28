@@ -1,0 +1,11 @@
+*.o
+/fatlabel
+/fsck.fat
+/mkfs.fat
+
+tags
+*~
+.*.sw[a-p]
+*.orig
+*.rej
+*.DS_Store

@@ -49,7 +49,7 @@ SIZE=`echo "$SIZE * 1.1 / 1" | bc`
 #dd if=/dev/zero of=$OUTPUT count=1 bs=$SIZE > /dev/null
 truncate -s $SIZE $OUTPUT
 LOOPDEV=`losetup -f $OUTPUT --show`
-mkdosfs -F 32  $LOOPDEV > /dev/null
+mkfs.vfat -F 32  $LOOPDEV > /dev/null
 mkdir $MOUNTPONIT
 mount -t vfat $LOOPDEV $MOUNTPONIT
 
