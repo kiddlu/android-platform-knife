@@ -24,7 +24,7 @@ adk_input ()
 	echo input
 }
 
-adk_curapk ()
+adk_focusedapk ()
 {
 PACKAGE=`adb shell dumpsys activity  |grep mFocusedActivity | awk {'print $4'} | sed 's/\(.*\)\/\.\(.*\)/\1/g'`
 adb shell pm list packages -f | grep $PACKAGE
@@ -43,7 +43,7 @@ case "$1" in
 		adb shell am start -n com.smartisanos.setupwizard/com.smartisanos.setupwizard.SetupWizardCompleteActivity;;
 	meminfo)
 		adk_meminfo;;
-	curapk)
-		adk_curapk;;
+	focusedapk)
+		adk_focusedapk;;
 	*) adb shell $*;;
 esac

@@ -6,7 +6,7 @@ local adk_parser = parser(
 	"pk",
 	"meminfo",
 	"smartisan-active",
-	"curapk",
+	"focusedapk",
 --trace
     "strace",
 	"ltrace",
