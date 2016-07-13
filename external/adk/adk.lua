@@ -1,12 +1,16 @@
 local parser = clink.arg.new_parser
 local adk_parser = parser(
 	{
---buildin
+--buildin script
 	"ftyrst",
 	"pk",
 	"meminfo",
+	"root",
 	"smartisan-active",
+	"smartisan-launcher",
+	"listapk",
 	"focusedapk",
+	"panic",
 --trace
     "strace",
 	"ltrace",
@@ -27,6 +31,7 @@ local adk_parser = parser(
 	"printenv",
 	"ifconfig",
 	"vmstat",
+	"procrank",
 	"lsof",
 	"busybox",
 	"getevent",

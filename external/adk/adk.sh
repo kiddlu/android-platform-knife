@@ -11,12 +11,27 @@ if [ -f "$HOME/.shrc" ]; then
 fi
 
 # Android Debug Kit
-# This is a simple wrapper for "adb function / shell" */
+# This is a simple wrapper / script for "adb function / shell" */
 
 #function
 adk_meminfo ()
 {
-	echo meminfo
+	adb root
+	adb wait-for-device
+while [ 1 -eq 1 ]
+do
+	adb shell cat /proc/meminfo
+	adb shell cat /proc/pagetypeinfo
+	adb shell cat /proc/slabinfo
+	adb shell cat /proc/zoneinfo
+	adb shell cat /proc/vmallocinfo
+	adb shell cat /proc/vmstat
+	adb shell cat /proc/meminfo
+	adb shell procrank
+	adb shell top -n 1
+	adb shell free -m
+	adb shell sleep 5
+done
 }
 
 adk_input ()
@@ -24,10 +39,40 @@ adk_input ()
 	echo input
 }
 
+adk_root ()
+{
+	adb root
+	adb wait-for-device
+	for string in `adb shell mount | grep ro, | awk '{printf ("%s@%s\n",$1, $2) }'`; do
+		drive=$(echo $string  |awk -F'@' '$0=$1')
+		mountpoint=$(echo $string|awk -F'@' '$0=$2')
+		adb shell mount -o remount $drive $mountpoint
+	done
+}
+
+adk_panic ()
+{
+	adb root
+	adb wait-for-device
+	adb shell "echo c > /proc/sysrq-trigger"
+}
+
+adk_listapk ()
+{
+	adb shell pm list packages -f > /tmp/tmplog.pid.$$
+
+	for dir in '/system/app' '/system/priv-app' '/system/vendor' '/system/framework' '/data/app'; do
+		echo 
+		echo dir: $dir
+		cat /tmp/tmplog.pid.$$ | grep $dir
+	done
+
+	rm /tmp/tmplog.pid.$$
+}
 adk_focusedapk ()
 {
-PACKAGE=`adb shell dumpsys activity  |grep mFocusedActivity | awk {'print $4'} | sed 's/\(.*\)\/\.\(.*\)/\1/g'`
-adb shell pm list packages -f | grep $PACKAGE
+packages=`adb shell dumpsys activity  | grep mFocusedActivity | awk {'print $4'} | sed 's/\(.*\)\/\.\(.*\)/\1/g'`
+adb shell pm list packages -f | grep $packages
 }
 
 if [ $# -lt 1 ] ; then 
@@ -41,8 +86,16 @@ case "$1" in
 		adb shell am broadcast -a android.intent.action.MASTER_CLEAR;;
 	smartisan-active)
 		adb shell am start -n com.smartisanos.setupwizard/com.smartisanos.setupwizard.SetupWizardCompleteActivity;;
+	smartisan-launcher)
+		adb shell am start -n com.smartisanos.launcher/com.smartisanos.launcher.Launcher;;
 	meminfo)
 		adk_meminfo;;
+	root)
+		adk_root;;
+	panic)
+		adk_panic;;
+	listapk)
+		adk_listapk;;
 	focusedapk)
 		adk_focusedapk;;
 	*) adb shell $*;;
