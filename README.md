@@ -1,8 +1,8 @@
-##Android Host Knife
+##Android Platform Knife
 
 #### How to build?
 
-	cd android-host-knife/
+	cd android-platform-knife/
 	make -f Makefile.$(your-platform) CROSS_COMPILE=$(if-you-need)
 	find what you build in ./output/bin/
 
