@@ -20,17 +20,17 @@ adk_meminfo ()
 	adb wait-for-device
 while [ 1 -eq 1 ]
 do
-	adb shell cat /proc/meminfo
-	adb shell cat /proc/pagetypeinfo
-	adb shell cat /proc/slabinfo
-	adb shell cat /proc/zoneinfo
-	adb shell cat /proc/vmallocinfo
-	adb shell cat /proc/vmstat
-	adb shell cat /proc/meminfo
-	adb shell procrank
-	adb shell top -n 1
-	adb shell free -m
-	adb shell sleep 5
+	adb shell "cat /proc/meminfo"
+	adb shell "cat /proc/pagetypeinfo"
+	adb shell "cat /proc/slabinfo"
+	adb shell "cat /proc/zoneinfo"
+	adb shell "cat /proc/vmallocinfo"
+	adb shell "cat /proc/vmstat"
+	adb shell "cat /proc/meminfo"
+	adb shell "procrank"
+	adb shell "top -n 1"
+	adb shell "free -m"
+	adb shell "sleep 5"
 done
 }
 
@@ -46,7 +46,7 @@ adk_root ()
 	for string in `adb shell mount | grep ro, | awk '{printf ("%s@%s\n",$1, $2) }'`; do
 		drive=$(echo $string  |awk -F'@' '$0=$1')
 		mountpoint=$(echo $string|awk -F'@' '$0=$2')
-		adb shell mount -o remount $drive $mountpoint
+		adb shell "mount -o remount $drive $mountpoint"
 	done
 }
 
@@ -59,7 +59,7 @@ adk_panic ()
 
 adk_listapk ()
 {
-	adb shell pm list packages -f > /tmp/tmplog.pid.$$
+	adb shell "pm list packages -f" > /tmp/tmplog.pid.$$
 
 	for dir in '/system/app' '/system/priv-app' '/system/vendor' '/system/framework' '/data/app'; do
 		echo 
@@ -72,7 +72,22 @@ adk_listapk ()
 adk_focusedapk ()
 {
 packages=`adb shell dumpsys activity  | grep mFocusedActivity | awk {'print $4'} | sed 's/\(.*\)\/\.\(.*\)/\1/g'`
-adb shell pm list packages -f | grep $packages
+adb shell "pm list packages -f" | grep $packages
+}
+
+adk_hexdump()
+{
+	dump_path="/data/hexdump/"
+	blk_path="/dev/block/bootdevice/by-name/"
+	adb root
+	adb wait-for-device
+	adb shell "mkdir $dump_path"
+	for partition in `adb shell ls $blk_path | grep -v "system\|cache\|userdata"`; do
+		adb shell "dd if=$blk_path/$partition of=$dump_path/$partition"
+	done
+	adb shell "sync"
+	adb pull  $dump_path .
+	adb shell "rm -rf $dump_path"
 }
 
 if [ $# -lt 1 ] ; then 
@@ -88,6 +103,8 @@ case "$1" in
 		adb shell am start -n com.smartisanos.setupwizard/com.smartisanos.setupwizard.SetupWizardCompleteActivity;;
 	smartisan-launcher)
 		adb shell am start -n com.smartisanos.launcher/com.smartisanos.launcher.Launcher;;
+	hexdump)
+		adk_hexdump;;
 	meminfo)
 		adk_meminfo;;
 	root)
