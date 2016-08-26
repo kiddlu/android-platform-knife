@@ -11,6 +11,9 @@ local adk_parser = parser(
 	"listapk",
 	"focusedapk",
 	"panic",
+	"hexdump",
+	"cpu-performance",
+	"net-shell",
 --trace
     "strace",
 	"ltrace",

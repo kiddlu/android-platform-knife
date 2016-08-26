@@ -90,6 +90,38 @@ adk_hexdump()
 	adb shell "rm -rf $dump_path"
 }
 
+adk_cpu-performance()
+{
+	adb root
+	adb wait-for-device
+	adb shell stop thermal-engine
+	cpus=0
+	cpus=`adb shell cat /proc/cpuinfo | grep processor | wc -l`
+	cpus=$((cpus - 1))
+	for nb in `seq 0 $cpus`; do
+		adb shell "echo performance > /sys/devices/system/cpu/cpu$nb/cpufreq/scaling_governor"
+		max_freq=`adb shell cat /sys/devices/system/cpu/cpu$nb/cpufreq/cpuinfo_max_freq`
+		adb shell "echo $max_freq > /sys/devices/system/cpu/cpu$nb/cpufreq/scaling_min_freq"
+		adb shell "echo $max_freq > /sys/devices/system/cpu/cpu$nb/cpufreq/scaling_max_freq"
+	done
+}
+
+adk_net-shell()
+{
+	tcpport=5555
+	adb disconnect
+	adb shell svc wifi enable
+	adb root
+	adb wait-for-device
+	adb shell setprop service.adb.tcp.port $tcpport
+	ipaddr=`adb shell "ifconfig wlan0" | grep "inet addr" | awk {'print $2'} | sed {"s/\(.*\):\(.*\)/\2/g"}`
+	adb tcpip $tcpport
+	echo $ipaddr:$tcpport
+	adb wait-for-device
+	adb connect $ipaddr:$tcpport
+	adb -s $ipaddr:$tcpport shell
+}
+
 if [ $# -lt 1 ] ; then 
 	echo "Android Debug Kit"
 	echo "adk \"cmd\" to execute"
@@ -109,11 +141,15 @@ case "$1" in
 		adk_meminfo;;
 	root)
 		adk_root;;
+	cpu-performance)
+		adk_cpu-performance;;
 	panic)
 		adk_panic;;
 	listapk)
 		adk_listapk;;
 	focusedapk)
 		adk_focusedapk;;
+	net-shell)
+		adk_net-shell;;
 	*) adb shell $*;;
 esac
