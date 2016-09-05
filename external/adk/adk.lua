@@ -14,6 +14,7 @@ local adk_parser = parser(
 	"hexdump",
 	"cpu-performance",
 	"net-shell",
+	"flash-dir",
 --trace
     "strace",
 	"ltrace",

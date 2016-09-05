@@ -13,7 +13,7 @@ fi
 # Android Debug Kit
 # This is a simple wrapper / script for "adb function / shell" */
 
-#function
+################### function ###################
 adk_meminfo ()
 {
 	adb root
@@ -78,11 +78,12 @@ adb shell "pm list packages -f" | grep $packages
 adk_hexdump()
 {
 	dump_path="/data/hexdump/"
-	blk_path="/dev/block/bootdevice/by-name/"
+	#blk_path="/dev/block/bootdevice/by-name/"
+	blk_path=`adb shell mount | grep system | awk '{print $1}' | sed "s/system//g"`
 	adb root
 	adb wait-for-device
 	adb shell "mkdir $dump_path"
-	for partition in `adb shell ls $blk_path | grep -v "system\|cache\|userdata"`; do
+	for partition in `adb shell ls $blk_path | grep -v "system\|cache\|userdata\|udisk"`; do
 		adb shell "dd if=$blk_path/$partition of=$dump_path/$partition"
 	done
 	adb shell "sync"
@@ -122,6 +123,40 @@ adk_net-shell()
 	adb -s $ipaddr:$tcpport shell
 }
 
+
+adk_flash-dir()
+{
+	webcgi="http://172.16.2.18/cgi-bin/vmlinux-lookup.cgi"
+	version=$(adb shell "cat /proc/version" | grep "Linux version")
+	if [ $host_platform == "cygwin" ] ; then
+		smb_path=$(curl --data-urlencode "version=$version" $webcgi 2> /dev/null | grep "Flashing binary" -A 1 | tail -1)
+		unc_path=$(echo ${smb_path#*smb:})
+		for string in `net use | grep "Microsoft Windows Network" | awk '{printf ("%s@%s\n",$2, $3)}'`; do
+			drive=$(echo $string  |awk -F'@' '$0=$1')
+			map_point=$(echo $string|awk -F'@' '$0=$2'| sed "s/\\\/\//g")
+			echo $unc_path | grep $map_point > /dev/null
+			if [ $? == 0 ]; then
+				#echo $drive $map_point $win_path
+				map_point_regex=$(echo $map_point | sed "s/\//\\\\\//g")
+				drive_regex=$(echo $drive | sed "s/\:/\\\:/g")
+				win_path=$(echo "$unc_path" | sed "s/$map_point_regex/$drive_regex/g")
+				echo $win_path | tee /dev/console | tr '\n' ' ' | clip
+			fi
+		done
+	fi
+}
+
+################### main ###################
+
+host_platform=""
+case `uname` in
+    Linux) host_platform=linux ;;
+    FreeBSD) host_platform=fbsd ;;
+    *CYGWIN*) host_platform=cygwin ;;
+    *MINGW*) host_platform=mingw ;;
+    Darwin) host_platform=darwin ;;
+esac
+
 if [ $# -lt 1 ] ; then 
 	echo "Android Debug Kit"
 	echo "adk \"cmd\" to execute"
@@ -139,6 +174,8 @@ case "$1" in
 		adk_hexdump;;
 	meminfo)
 		adk_meminfo;;
+	flash-dir)
+		adk_flash-dir;;
 	root)
 		adk_root;;
 	cpu-performance)
