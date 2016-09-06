@@ -15,6 +15,7 @@ local adk_parser = parser(
 	"cpu-performance",
 	"net-shell",
 	"flash-dir",
+	"symbol-dir",
 --trace
     "strace",
 	"ltrace",
