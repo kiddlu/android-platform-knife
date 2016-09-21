@@ -9,6 +9,9 @@
 
 #include "bootimg.h"
 
+#ifdef _WIN32
+#include <direct.h>
+#endif
 
 #define CMDLINE_SUFFIX    "-cmdline"
 #define BASE_SUFFIX       "-base"
@@ -108,7 +111,7 @@ int main(int argc, char** argv)
 
     argc--;
     argv++;
-   
+
     while(argc > 0){
         char *arg = argv[0];
         char *val = argv[1];
