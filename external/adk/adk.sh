@@ -77,13 +77,15 @@ adb shell "pm list packages -f" | grep $packages
 
 adk_hexdump()
 {
-	dump_path="/data/hexdump/"
-	#blk_path="/dev/block/bootdevice/by-name/"
-	blk_path=`adb shell mount | grep system | awk '{print $1}' | sed "s/system//g"`
+	dump_path="/data/hexdump"
+	#blk_path="/dev/block/bootdevice/by-name"
+	blk_path=`adb shell mount | grep system | awk '{print $1}' | sed "s/\/system//g"`
 	adb root
 	adb wait-for-device
 	adb shell "mkdir $dump_path"
 	for partition in `adb shell ls $blk_path | grep -v "system\|cache\|userdata\|udisk"`; do
+		partition=`echo "$partition" | tr -d '\r\n'`
+		echo "dd if=$blk_path/$partition of=$dump_path/$partition"
 		adb shell "dd if=$blk_path/$partition of=$dump_path/$partition"
 	done
 	adb shell "sync"
