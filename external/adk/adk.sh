@@ -27,9 +27,10 @@ do
 	adb shell "cat /proc/vmallocinfo"
 	adb shell "cat /proc/vmstat"
 	adb shell "cat /proc/meminfo"
-	adb shell "procrank"
 	adb shell "top -n 1"
 	adb shell "free -m"
+	adb shell "procrank"
+	adb shell "dumpsys procstats"
 	adb shell "sleep 5"
 done
 }
