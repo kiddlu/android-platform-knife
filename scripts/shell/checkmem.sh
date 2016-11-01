@@ -61,3 +61,6 @@ do
     echo "########## Loop $count ##########"
 	sleep 5
 done
+
+#echo scan > /sys/kernel/debug/kmemleak
+#cat /sys/kernel/debug/kmemleak > /data/kmem_leak_$num.txt
