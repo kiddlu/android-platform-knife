@@ -1,36 +1,40 @@
 #!/bin/sh
-# Make boot.img to OTA zip file
+# Make imgae to OTA zip file
 
-version="boot2ota 1.0
-Written by Kidd Lu."
+SCRIPT_DIR=`dirname "$0"`
+echo "$SCRIPT_DIR"
 
-usage="Usage: boot2ota boot.img [OTA zip file]... ...
+usage() {
+cat <<USAGE
 
-if no output file, use default ./boot-ota.zip as output file"
+Usage: img2ota [-o OTA.zip] -k key_dir  img1 img2...
 
-case $1 in
---help)    exec echo "$usage";;
---version) exec echo "$version";;
-esac
+-k to your key_dir
 
-INPUT=$1
+if no output file, use default ./img2ota.zip as output file
 
-if [ ! -f "$INPUT" ]; then 
-  echo -e "\033[31mErr: $INPUT does not exist\033[0m"
-  echo ""
-  exec echo "$usage"
-  exit 1 
+USAGE
+}
+
+while getopts "hk:o:" arg; do
+    case "$arg" in
+        h) usage; exit 0;;
+        k) KEYDIR="$OPTARG";;
+		o) OUTPUT="$OPTARG";;
+    esac
+done
+shift $(($OPTIND - 1))
+
+if  [ ! -n "$KEYDIR" ] ;then
+    usage; exit 1;
 fi
 
-if  [ ! -n "$2" ] ;then
-  OUTPUT=`pwd`/boot-ota.zip
-else
-  OUTPUT=`readlink -f $2`
+if  [ ! -n "$OUTPUT" ] ;then
+    OUTPUT=`pwd`/img2ota.zip
 fi
+INPUT=$@
 
-#echo "pack ramdisk to $OUTPUT"
-
-base64 -d <<EOF  > $OUTPUT
+base64 -d <<EOF  > /tmp/img2ota.$$.zip
 UEsDBBQAAAAAAHpOJkkAAAAAAAAAAAAAAAAJAAAATUVUQS1JTkYvUEsDBBQAAAAAAHpOJkkAAAAA
 AAAAAAAAAAANAAAATUVUQS1JTkYvY29tL1BLAwQUAAAAAAB6TiZJAAAAAAAAAAAAAAAAFAAAAE1F
 VEEtSU5GL2NvbS9nb29nbGUvUEsDBBQAAAAAAHpOJkkAAAAAAAAAAAAAAAAcAAAATUVUQS1JTkYv
@@ -6905,4 +6909,19 @@ cm9pZC91cGRhdGVyLXNjcmlwdAoAIAAAAAAAAQAYAACO22VraM4BLLf1POEH0gEst/U84QfSAVBL
 BQYAAAAABgAGAIUCAABY9wUAAAA=
 EOF
 
-zip $OUTPUT $INPUT
+trap "rm -rf /tmp/img2ota.$$/ /tmp/img2ota.$$.zip /tmp/img2ota.$$.unsign.zip" EXIT
+
+unzip /tmp/img2ota.$$.zip -d /tmp/img2ota.$$/
+
+cat << UPDATER > /tmp/img2ota.$$/META-INF/com/google/android/updater-script
+package_extract_file("boot.img", "/dev/block/bootdevice/by-name/boot");
+package_extract_file("emmc_appsboot.mbn", "/dev/block/bootdevice/by-name/aboot");
+UPDATER
+
+cd /tmp/img2ota.$$/ && zip /tmp/img2ota.$$.unsign.zip -r *
+cd - && zip /tmp/img2ota.$$.unsign.zip $INPUT
+
+case `uname` in
+    *CYGWIN*) java -jar "$SCRIPT_DIR"/signapk.jar -w $KEYDIR/releasekey.x509.pem $KEYDIR/releasekey.pk8 `cygpath -alw /tmp/img2ota.$$.unsign.zip` `cygpath -alw $OUTPUT`;;
+	*) java -jar "$SCRIPT_DIR"/signapk.jar -w $KEYDIR/releasekey.x509.pem $KEYDIR/releasekey.pk8 /tmp/img2ota.$$.unsign.zip $OUTPUT;;
+esac
