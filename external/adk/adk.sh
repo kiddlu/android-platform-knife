@@ -14,26 +14,6 @@ fi
 # This is a simple wrapper / script for "adb function / shell" */
 
 ################### function ###################
-adk_meminfo ()
-{
-	adb root
-	adb wait-for-device
-while [ 1 -eq 1 ]
-do
-	adb shell "cat /proc/meminfo"
-	adb shell "cat /proc/pagetypeinfo"
-	adb shell "cat /proc/slabinfo"
-	adb shell "cat /proc/zoneinfo"
-	adb shell "cat /proc/vmallocinfo"
-	adb shell "cat /proc/vmstat"
-	adb shell "cat /proc/meminfo"
-	adb shell "top -n 1"
-	adb shell "free -m"
-	adb shell "procrank"
-	adb shell "dumpsys procstats"
-	adb shell "sleep 5"
-done
-}
 
 adk_input ()
 {
@@ -223,8 +203,6 @@ case "$1" in
 		adb shell am start -n com.smartisanos.launcher/com.smartisanos.launcher.Launcher;;
 	hexdump)
 		adk_hexdump;;
-	meminfo)
-		adk_meminfo;;
 	flash-dir)
 		adk_flash-dir;;
 	symbol-dir)

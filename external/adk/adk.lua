@@ -4,7 +4,6 @@ local adk_parser = parser(
 --buildin script
 	"ftyrst",
 	"pk",
-	"meminfo",
 	"root",
 	"smartisan-active",
 	"smartisan-launcher",
