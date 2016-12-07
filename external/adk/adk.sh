@@ -1,14 +1,6 @@
 #!/bin/bash
 
-#cygwin
-if [ -f "$HOME/.winixrc" ]; then
-	source ~/.winixrc
-fi
-
-#posix
-if [ -f "$HOME/.shrc" ]; then
-	source ~/.shrc
-fi
+#set -x
 
 # Android Debug Kit
 # This is a simple wrapper / script for "adb function / shell" */
@@ -24,7 +16,7 @@ adk_root ()
 {
 	adb root
 	adb wait-for-device
-	for string in `adb shell mount | grep ro, | awk '{printf ("%s@%s\n",$1, $2) }'`; do
+	for string in `adb shell cat /proc/mounts | grep ro, | awk '{printf ("%s@%s\n",$1, $2) }'`; do
 		drive=$(echo $string  |awk -F'@' '$0=$1')
 		mountpoint=$(echo $string|awk -F'@' '$0=$2')
 		adb shell "mount -o remount $drive $mountpoint"
@@ -60,7 +52,7 @@ adk_hexdump()
 {
 	dump_path="/data/hexdump"
 	#blk_path="/dev/block/bootdevice/by-name"
-	blk_path=`adb shell mount | grep system | awk '{print $1}' | sed "s/\/system//g"`
+	blk_path=`adb shell cat /proc/mounts | grep system | awk '{print $1}' | sed "s/\/system//g"`
 	adb root
 	adb wait-for-device
 	adb shell "mkdir $dump_path"
