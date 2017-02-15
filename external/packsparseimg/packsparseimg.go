@@ -33,14 +33,14 @@ func main() {
 	var image string
 	flag.StringVar(&xml_path, "x", "./rawprogram_unsparse.xml", "xml file to load")
 	flag.StringVar(&output_path, "o", "./", "output dir path")
-	flag.StringVar(&image, "t", "system", "image to unsparse: system / cache / userdata")
+	flag.StringVar(&image, "t", "system", "image to unsparse: system / cache / userdata / persist")
 	flag.Parse()
 
 	switch image {
-	case "system", "cache", "userdata":
+	case "system", "cache", "userdata", "persist":
 		fmt.Printf("target image is %s\n", image)
 	default:
-		panic("target image must be system / cache / userdata")
+		panic("target image must be system / cache / userdata / persist")
 	}
 	fmt.Printf("xml_path is %s\n", xml_path)
 	fmt.Printf("output_path is %s\n", output_path)

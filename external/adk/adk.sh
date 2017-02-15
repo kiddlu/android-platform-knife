@@ -1,7 +1,5 @@
 #!/bin/bash
 
-#set -x
-
 # Android Debug Kit
 # This is a simple wrapper / script for "adb function / shell" */
 
@@ -21,6 +19,17 @@ adk_root ()
 		mountpoint=$(echo $string|awk -F'@' '$0=$2')
 		adb shell "mount -o remount $drive $mountpoint"
 	done
+}
+
+adk_fs-test ()
+{
+	adb root
+	adb wait-for-device
+
+	test_path="/data/fstest"
+	adb shell "mkdir $test_path"
+	adb shell "strace -T dd if=/dev/urandom of=$test_path/file.$$ bs=1024 count=100000"
+#	adb shell "rm -rf $test_path"
 }
 
 adk_panic ()
@@ -114,7 +123,7 @@ adk_flash-dir()
 				map_point_regex=$(echo $map_point | sed "s/\//\\\\\//g")
 				drive_regex=$(echo $drive | sed "s/\:/\\\:/g")
 				win_path=$(echo "$unc_path" | sed "s/$map_point_regex/$drive_regex/g")
-				echo $win_path | tee /dev/console | tr '\n' ' ' | clip
+				echo $win_path | sed  "s/\//\\\\/g" | tee /dev/console | tr '\n' ' ' | clip
 			fi
 		done
 	fi
@@ -201,6 +210,8 @@ case "$1" in
 		adk_symbol-dir;;
 	fix-usb)
 		adk_fix-usb;;
+	fs-test)
+		adk_fs-test;;
 	usb-diag)
 		adk_usb-diag;;
 	pmap-all)

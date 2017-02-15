@@ -15,6 +15,7 @@ local adk_parser = parser(
 	"net-shell",
 	"flash-dir",
 	"symbol-dir",
+	"hwinfo",
 --trace
     "strace",
 	"ltrace",
