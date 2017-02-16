@@ -1,5 +1,11 @@
 ##Android Platform Knife
 
+This is an almost dead project, just for personal debug use.
+
+I think you should use Ubuntu desktop since Android native arch changed so fast and a lot
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+
 #### How to build?
 
 	cd android-platform-knife/
@@ -8,9 +14,9 @@
 
 #### How to use?
 	cp all ./output/bin/* to your PATH
-	
+
 	or you can use my prebuild
-	
+
 	on Linux:
 	source ./setenv.sh
 
